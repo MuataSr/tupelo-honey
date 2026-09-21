@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnostic Q{{ q_index + 1 }}/{{ total }} — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="diagnostic-quiz" style="max-width: 720px; margin: 1rem auto;">
+
+    <!-- Progress bar -->
+    <div style="margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+        <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">
+          Question {{ q_index + 1 }} of {{ total }}
+        </span>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">
+          {{ ((q_index / total) * 100)|int }}% complete
+        </span>
+      </div>
+      <div style="background: var(--border); border-radius: 4px; height: 6px; overflow: hidden;">
+        <div style="background: var(--navy); height: 100%; width: {{ ((q_index / total) * 100)|int }}%; transition: width 0.3s ease; border-radius: 4px;"></div>
+      </div>
+    </div>
+
+    <!-- Stimulus passage (if present) -->
+    {% if question.stimulus %}
+    <div style="background: var(--surface); border-left: 3px solid var(--navy); padding: 1rem 1.25rem; margin-bottom: 1.25rem; border-radius: 0 6px 6px 0;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--navy); font-weight: 600; margin-bottom: 0.5rem;">Read the following passage</div>
+      <div style="font-size: 0.92rem; line-height: 1.65; color: var(--text-secondary); font-style: italic;">
+        {{ question.stimulus|safe }}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Question -->
+    <div style="margin-bottom: 1.5rem;">
+      <p style="font-size: 1.1rem; font-weight: 500; line-height: 1.6; margin: 0;">
+        {{ question.question_text }}
+      </p>
+    </div>
+
+    <!-- Answer options -->
+    <form method="POST" action="/diagnostic/{{ quiz_id }}/{{ q_index }}/answer" id="diagnosticForm">
+      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        {% for option in question.options %}
+        <label style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; background: var(--surface); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color 0.15s ease, background 0.15s ease;"
+               onmouseover="this.style.borderColor='var(--navy)'"
+               onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='var(--border)'">
+          <input type="radio" name="selected" value="{{ option }}" style="margin-top: 0.15rem; accent-color: var(--navy);"
+                 onchange="document.getElementById('diagnosticForm').submit()">
+          <span style="font-size: 0.95rem; line-height: 1.5;">{{ option }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </form>
+
+    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+      <p style="font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
+        No feedback during diagnostic. Results and study plan shown at the end.
+      </p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

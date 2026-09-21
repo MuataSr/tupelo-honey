@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+*.log
+
+# Backups — historical noise + runtime DB snapshots (never commit)
+*.bak.pre-progress
+*.bak.*
+*.bak-*
+data/*.bak-*
+app.py.bak*
+
+# Runtime / user data (never commit)
+data/user_progress.db
+data/fcle_kb.db
+data/fcle_questions.db
+fcle_questions.db
+
+# OS
+.DS_Store
+data/*.db-shm
+data/*.db-wal
+# Secrets — never commit (.env, .env.bak-*, .env.local, etc.)
+.env*
+
+# Runtime DB backups contain real user data — never commit
+data/backups/
+
+# Template IS committed; real .env files are not.
+!.env.example
+
+# Runtime DB at the repo root (the data/ copy above was already ignored, this one was not).
+user_progress.db
+
+# SQLite sidecars, wherever they appear.
+*.db-shm
+*.db-wal
+
+# Re-key working artefacts: the DB backup holds a full copy of the content DB and the
+# progress log is per-run scratch. rekey.csv IS kept - it is the provenance of the codes.
+*.pre-rekey-*
+rekey-progress.jsonl
+rekey.csv.pass1
+
+# Kept locally for provenance; the split is reversible from the DB itself.
+data/content-77-presplit.json
+
+# db backups
+data/fcle.db.pre-*

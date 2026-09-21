@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}Coach — Tupelo Nursing Exam Prep{% endblock %}
+{% block crumb %}Coach{% endblock %}
+
+
+{% block content %}
+<div class="sc-page">
+
+  <div class="sc-head">
+    <h1 class="sc-title">Coach</h1>
+    <p class="sc-sub">{{ plan.blurb }}</p>
+  </div>
+
+  <div class="sc-grid">
+
+    <section class="sc-panel sc-plan" aria-labelledby="sc-plan-h">
+      <div class="sc-panel-head">
+        <h2 id="sc-plan-h">{{ plan.title }}</h2>
+        {% if plan.days_to_exam is not none %}
+          <span class="sc-chip">
+            {% if plan.days_to_exam > 0 %}{{ plan.days_to_exam }} day{{ '' if plan.days_to_exam == 1 else 's' }} to test day
+            {% elif plan.days_to_exam == 0 %}Test day is today
+            {% else %}Test day has passed{% endif %}
+          </span>
+        {% endif %}
+      </div>
+
+      {% if plan.blocks %}
+        <ul class="sc-blocks">
+          {% for b in plan.blocks %}
+          <li class="sc-block sc-block--{{ b.kind }}">
+            <span class="sc-kind">
+              {% if b.kind == 'review' %}Review{% elif b.kind == 'new' %}New{% elif b.kind == 'timed' %}Timed{% else %}{{ b.kind }}{% endif %}
+            </span>
+            <span class="sc-block-text">{{ b.text }}</span>
+            {% if b.topic %}<span class="sc-topic">{{ b.topic }}</span>{% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="sc-empty">{{ empty_text }}</p>
+        <p class="sc-cta-row">
+          <a class="btn-a btn-a-primary" href="/diagnostic">Take the diagnostic</a>
+        </p>
+      {% endif %}
+    </section>
+
+    <section class="sc-panel sc-ready" aria-labelledby="sc-ready-h">
+      <div class="sc-panel-head">
+        <h2 id="sc-ready-h">Where you stand</h2>
+      </div>
+
+      {% if plan.has_data %}
+        <p class="sc-range">{{ plan.projected_range_text }}</p>
+        <p class="sc-pass">{{ plan.pass_line_text }}</p>
+        <div class="sc-meter" role="img" aria-label="Readiness {{ readiness_pct }} percent, {{ plan.band }}">
+          <span class="sc-meter-fill" style="width: {{ readiness_pct }}%"></span>
+        </div>
+        <p class="sc-band">{{ plan.band }}</p>
+        <p class="sc-note">{{ widening_text }}</p>
+      {% else %}
+        <p class="sc-range sc-range--empty">{{ no_data_text }}</p>
+        <p class="sc-pass">{{ plan.pass_line_text }}</p>
+        <p class="sc-note">Answer a set of questions and this fills in.</p>
+      {% endif %}
+
+      {% if plan.days_to_exam is none %}
+        <p class="sc-note">
+          Set your test date and the plan will pace itself against it.
+          <a href="/settings">Set test date</a>
+        </p>
+      {% endif %}
+    </section>
+
+  </div>
+
+  {% if plan.reading %}
+  <section class="sc-panel sc-read" aria-labelledby="sc-read-h">
+    <div class="sc-panel-head">
+      <h2 id="sc-read-h">{{ plan.reading.intro }}</h2>
+    </div>
+    <p class="sc-read-title">{{ plan.reading.title }}</p>
+    <p class="sc-read-meta">{{ plan.reading.minutes_text }}</p>
+    <p class="sc-read-then">
+      {{ plan.reading.then }}
+      {% if drill_slug %}
+        <a class="btn-a btn-a-ghost" href="/quiz/{{ drill_slug }}">Start drilling</a>
+      {% endif %}
+    </p>
+  </section>
+  {% endif %}
+
+  {% if plan.reporting %}
+  <section class="sc-panel sc-report" aria-labelledby="sc-report-h">
+    <div class="sc-panel-head">
+      <h2 id="sc-report-h">{{ report_title }}</h2>
+      <span class="sc-chip sc-chip--quiet">Most-missed first</span>
+    </div>
+    <ul class="sc-rows">
+      {% for r in plan.reporting.rows %}
+      <li class="sc-row">
+        <code class="sc-code">{{ r.code }}</code>
+        <span class="sc-miss">{{ (r.miss_rate * 100) | round | int }}% missed</span>
+        <span class="sc-att">{{ r.attempted }} answered</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% elif report_absent %}
+  <section class="sc-panel">
+    <p class="sc-note">{{ report_absent }}</p>
+  </section>
+  {% endif %}
+
+  <p class="sc-attrib">
+    Open educational resource content developed for Tupelo Honey Nursing Prep,
+    licensed under
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+    TEAS&reg; is a trademark of ATI. HESI&reg; is a trademark of Elsevier.
+  </p>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if tutor_connected %}
+<script>
+(function() {
+  var chatArea = document.getElementById('chat-area');
+  var input = document.getElementById('chat-input');
+  var sendBtn = document.getElementById('chat-send');
+  var statusEl = document.getElementById('tutor-status');
+  var statusText = document.getElementById('status-text');
+  var currentDomain = null;
+  // Hydrate persistent chat history from server
+  var savedMessages = {{ chat_messages | tojson }};
+  var history = [];
+  var serversReady = false;
+
+  // ── Auto-select domain from URL param ────────────
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('domain')) {
+    var domId = params.get('domain');
+    document.querySelectorAll('.domain-chip').forEach(function(c) {
+      c.classList.remove('active');
+      if (c.dataset.domain === domId) c.classList.add('active');
+    });
+    currentDomain = parseInt(domId);
+  }
+
+  // ── Server Status ────────────────────────────────
+  function checkStatus() {
+    fetch('/tutor/status')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var dot = statusEl.querySelector('.status-dot');
+        if (data.router && data.teacher) {
+          dot.className = 'status-dot ready';
+          statusText.textContent = 'Tutor online';
+          sendBtn.disabled = false;
+          serversReady = true;
+        } else {
+          dot.className = 'status-dot error';
+          var missing = [];
+          if (!data.router) missing.push('router');
+          if (!data.teacher) missing.push('teacher');
+          statusText.textContent = 'Offline: ' + missing.join(', ') + ' not running';
+          sendBtn.disabled = true;
+        }
+      })
+      .catch(function() {
+        statusEl.querySelector('.status-dot').className = 'status-dot error';
+        statusText.textContent = 'Cannot reach server';
+        sendBtn.disabled = true;
+      });
+  }
+  checkStatus();
+  setInterval(checkStatus, 30000);
+
+  // ── Hydrate saved messages ────────────────────────
+  if (savedMessages && savedMessages.length > 0) {
+    var welcome = chatArea.querySelector('.welcome-card');
+    if (welcome) welcome.remove();
+    savedMessages.forEach(function(msg) {
+      addMessage(msg.role, msg.content);
+      history.push({role: msg.role, content: msg.content});
+    });
+  }
+
+  // ── Domain Selection ─────────────────────────────
+  document.querySelectorAll('.domain-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.domain-chip').forEach(function(c) { c.classList.remove('active'); });
+      this.classList.add('active');
+      currentDomain = this.dataset.domain ? parseInt(this.dataset.domain) : null;
+    });
+  });
+
+  // ── Suggestion Chips ─────────────────────────────
+  document.querySelectorAll('.suggestion-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      input.value = this.dataset.msg;
+      sendMessage();
+    });
+  });
+
+  // ── Chat Functions ───────────────────────────────
+  function addMessage(role, text, extra) {
+    var welcome = chatArea.querySelector('.welcome-card');
+    if (welcome) welcome.remove();
+
+    var msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-msg ' + role;
+
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    bubble.textContent = text;
+    msgDiv.appendChild(bubble);
+
+    if (extra) {
+      var meta = document.createElement('div');
+      meta.className = 'kb-info';
+      meta.textContent = extra;
+      msgDiv.appendChild(meta);
+    }
+
+    chatArea.appendChild(msgDiv);
+    chatArea.scrollTop = chatArea.scrollHeight;
+    return msgDiv;
+  }
+
+  function addTyping() {
+    var msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-msg tutor';
+    msgDiv.id = 'typing-indicator';
+    msgDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+    chatArea.appendChild(msgDiv);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function removeTyping() {
+    var el = document.getElementById('typing-indicator');
+    if (el) el.remove();
+  }
+
+  function sendMessage() {
+    var text = input.value.trim();
+    if (!text || !serversReady) return;
+
+    input.value = '';
+    addMessage('student', text);
+    history.push({role: 'student', content: text});
+
+    addTyping();
+    sendBtn.disabled = true;
+
+    fetch('/tutor/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        message: text,
+        domain: currentDomain,
+        history: history.slice(-12)
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      removeTyping();
+      var kbInfo = data.kb_hits
+        ? 'KB: ' + data.kb_hits.content + ' sections, ' + data.kb_hits.terms + ' terms, ' + data.kb_hits.misconceptions + ' misconceptions'
+        : '';
+      addMessage('tutor', data.response, kbInfo);
+      history.push({role: 'tutor', content: data.response});
+    })
+    .catch(function() {
+      removeTyping();
+      addMessage('tutor', 'Sorry, something went wrong. Please try again.');
+    })
+    .finally(function() {
+      sendBtn.disabled = false;
+      input.focus();
+    });
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

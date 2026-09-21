@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Tupelo — Nursing Exam Prep{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {% block head %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}?v=10">
+  <link rel="stylesheet" href="{{ url_for('static', filename='katex/katex.min.css') }}">
+  <script defer src="{{ url_for('static', filename='katex/katex.min.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='katex/auto-render.min.js') }}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: "\\(", right: "\\)", display: false},
+            {left: "\\[", right: "\\]", display: true}
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
+</head>
+<body class="a-shell{% block bodyclass %}{% endblock %}{% if standalone %} standalone{% endif %}{% if standalone_auth %} auth-standalone{% endif %}">
+
+{% if not standalone %}
+<div class="app-shell">
+
+  {# ── Sidebar (Template A) ── #}
+  <aside class="sidebar" id="app-sidebar">
+    <div class="sidebar-brand">
+      <a href="/" style="text-decoration:none;display:block;line-height:0" aria-label="Tupelo home">
+        <img src="{{ url_for('static', filename='img/tupelo-logo.png') }}"
+             srcset="{{ url_for('static', filename='img/tupelo-logo.png') }} 2x, {{ url_for('static', filename='img/tupelo-logo.png') }} 3x"
+             width="168" alt="Tupelo Nursing Exam Prep" class="tupelo-brand-logo">
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group">
+        <div class="nav-label">Menu</div>
+        <a href="/" class="nav-link{% if request.path == '/' %} active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          Home
+        </a>
+        <a href="/coach" class="nav-link{% if request.path == '/coach' %} active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5 5-2z" stroke-linejoin="round"/></svg>
+          Coach
+        </a>
+        <a href="/diagnostic" class="nav-link{% if request.path == '/diagnostic' %} active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 13l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Diagnostic
+        </a>
+        <a href="/stimulus" class="nav-link{% if request.path == '/stimulus' %} active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Stimulus Hub
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Practice areas</div>
+        <a href="/quiz/reading" class="nav-link{% if request.path == '/quiz/reading' %} active{% endif %}">Reading</a>
+        <a href="/quiz/math" class="nav-link{% if request.path == '/quiz/math' %} active{% endif %}">Math</a>
+        <a href="/quiz/science" class="nav-link{% if request.path == '/quiz/science' %} active{% endif %}">Science</a>
+        <a href="/quiz/english-language" class="nav-link{% if request.path == '/quiz/english-language' %} active{% endif %}">English & Language</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Account</div>
+        {% if current_user and not current_user.is_anonymous %}
+        <a href="/account" class="nav-link{% if request.path == '/account' %} active{% endif %}">My Account</a>
+        <a href="/stats" class="nav-link{% if request.path == '/stats' %} active{% endif %}">Progress &amp; Stats</a>
+        <a href="/settings" class="nav-link{% if request.path == '/settings' %} active{% endif %}">Settings</a>
+        <a href="/logout" class="nav-link">Log out</a>
+        {% else %}
+        <a href="/account" class="nav-link">My Account</a>
+        <a href="/login" class="nav-link">Log in / Sign up</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="plan-card">
+        <div class="plan-title">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5.6L20 8.6l-4.2 4 1.1 5.8L12 15.5l-4.9 2.9 1.1-5.8L4 8.6l5.6-1z"/></svg>
+          Tupelo <span class="plan-status">FREE</span>
+        </div>
+        <p>Open &amp; free for every student.</p>
+      </div>
+      {% if current_user and not current_user.is_anonymous %}
+      <div class="side-user">
+        <span class="side-avatar">{{ (current_user.display_name or 'U')[:1] | upper }}</span>
+        <span><span class="who">{{ current_user.display_name }}</span><br><span class="email">{{ current_user.email }}</span></span>
+      </div>
+      {% endif %}
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="app-overlay"></div>
+
+  <div class="main-col">
+
+    {# ── Top bar (Template A) ── #}
+    <header class="topbar">
+      <button type="button" class="menu-btn" data-nav-toggle aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"/></svg>
+      </button>
+      <span class="crumb">Tupelo &nbsp;/&nbsp; {% block crumb %}Home{% endblock %}</span>
+      <div class="topbar-right">
+        <span class="exam-pill">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 5.6L20 8.6l-4.2 4 1.1 5.8L12 15.5l-4.9 2.9 1.1-5.8L4 8.6l5.6-1z"/></svg>
+          Free
+        </span>
+        {% if current_user and not current_user.is_anonymous %}
+        <a href="/account" class="btn-a btn-a-ghost" style="padding:6px 13px;font-size:12.5px">My Account</a>
+        <span class="side-avatar" style="background:var(--a-navy-600);color:#fff">{{ (current_user.display_name or 'U')[:1] | upper }}</span>
+        {% else %}
+        <a href="/login" class="btn-a btn-a-primary" style="padding:6px 14px;font-size:12.5px">Log in</a>
+        {% endif %}
+      </div>
+    </header>
+{% else %}
+<div class="standalone-wrap">
+  {% if standalone_auth %}
+  <div class="auth-brand">
+    <a href="/" class="auth-logo-link" aria-label="Tupelo Honey Nursing Prep home">
+      <img src="{{ url_for('static', filename='img/tupelo-mark.png') }}" alt="" class="auth-logo-icon">
+      <span class="auth-logo-word">
+        <span class="auth-logo-name">Tupelo Honey</span>
+        <span class="auth-logo-sub">Nursing Prep</span>
+      </span>
+    </a>
+  </div>
+  {% endif %}
+{% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="max-width:1200px;margin:12px auto 0;width:100%">
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {# ── Onboarding Redirect ── #}
+    {% if current_user and not current_user.get('is_anonymous')
+       and request.endpoint not in ['onboarding', 'login', 'signup', 'registered']
+       and current_user.get('onboarding_done', 1) == 0 %}
+    <script>window.location.href = "/onboarding";</script>
+    {% endif %}
+
+    <main class="app-body a-page">
+      {% block content %}{% endblock %}
+    </main>
+
+    {% block footer_extra %}{% endblock %}
+
+{% if not standalone %}
+  </div><!-- /main-col -->
+</div><!-- /app-shell -->
+{% else %}
+</div><!-- /standalone-wrap -->
+{% endif %}
+
+<script>
+  (function () {
+    var sb = document.getElementById('app-sidebar');
+    var ov = document.getElementById('app-overlay');
+    function setNav(open) {
+      if (!sb) return;
+      sb.classList.toggle('open', open);
+      if (ov) ov.style.display = open ? 'block' : '';
+      document.body.classList.toggle('overflow-hidden', open && window.innerWidth < 1024);
+    }
+    var togglers = document.querySelectorAll('[data-nav-toggle]');
+    for (var i = 0; i < togglers.length; i++) {
+      togglers[i].addEventListener('click', function () { setNav(true); });
+    }
+    if (ov) ov.addEventListener('click', function () { setNav(false); });
+  })();
+</script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

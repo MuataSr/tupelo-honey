@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Log In — Tupelo Nursing Exam Prep{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1>Welcome Back</h1>
+  <p class="subtitle">Enter your email and we'll give you your personal dashboard link.</p>
+
+  <form method="POST" action="/login">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required autofocus>
+    </div>
+    <button type="submit" class="submit-btn" style="margin-top: 8px;">Get My Dashboard Link</button>
+  </form>
+
+  <p class="auth-note" style="font-size:0.85rem;color:var(--text-muted,#666);margin-top:14px;line-height:1.5">
+    No password — your dashboard link is your login. If no account exists for this email, you can create one below.
+  </p>
+
+  <p class="auth-link">New here? <a href="/signup">Create an account</a></p>
+</div>
+{% endblock %}

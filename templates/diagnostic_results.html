@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnostic Results — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="diagnostic-results" style="max-width: 720px; margin: 1.5rem auto;">
+
+    <!-- Overall Score -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Your Diagnostic Results</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        {{ total_correct }} of {{ total_questions }} correct
+      </p>
+      <div style="font-size: 3rem; font-weight: 700; color: {% if overall_pct >= 80 %}#2E7D32{% elif overall_pct >= 60 %}#E65100{% else %}#C62828{% endif %}; margin: 0.5rem 0;">
+        {{ overall_pct }}%
+      </div>
+      <p style="color: var(--text-secondary); font-size: 0.9rem;">
+        {% if overall_pct >= 80 %}
+        Strong start! Focus on shoring up weaker topics.
+        {% elif overall_pct >= 60 %}
+        Good foundation. With focused study, you'll be ready.
+        {% else %}
+        Don't worry — this is your starting point, not your final score. Let's build a plan.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Domain Breakdown -->
+    <div style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.15rem; margin-bottom: 1rem;">Domain Scores</h2>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for domain in domain_results %}
+        <div style="background: var(--surface); border-radius: 8px; padding: 1rem 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600;">{{ domain.name }}</span>
+            <span style="font-weight: 700; color: {% if domain.pct >= 80 %}#2E7D32{% elif domain.pct >= 60 %}#E65100{% else %}#C62828{% endif %};">
+              {{ domain.pct }}%
+            </span>
+          </div>
+          <div style="background: var(--border); border-radius: 3px; height: 8px; overflow: hidden;">
+            <div style="background: {% if domain.pct >= 80 %}#2E7D32{% elif domain.pct >= 60 %}#E65100{% else %}#C62828{% endif %}; height: 100%; width: {{ domain.pct }}%; border-radius: 3px;"></div>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.35rem;">
+            {{ domain.correct }} of {{ domain.total }} correct
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recommended Study Order -->
+    <div style="background: linear-gradient(135deg, rgba(27,58,92,0.06) 0%, rgba(27,58,92,0.12) 100%); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid rgba(27,58,92,0.15);">
+      <h2 style="font-size: 1.15rem; margin-bottom: 1rem;">📚 Your Study Plan</h2>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+        Focus on your weakest domains first. Here's your recommended order:
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        {% for domain in study_order %}
+        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; background: white; border-radius: 6px;">
+          <span style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: {% if loop.index0 == 0 %}#C62828{% elif loop.index0 == 1 %}#E65100{% elif loop.index0 == 2 %}#F9A825{% else %}#2E7D32{% endif %}; color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">
+            {{ loop.index }}
+          </span>
+          <div style="flex: 1;">
+            <span style="font-weight: 600;">{{ domain.name }}</span>
+            <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 0.5rem;">{{ domain.pct }}%</span>
+          </div>
+          <a href="/quiz/{{ domain.slug }}" style="font-size: 0.8rem; color: var(--navy); text-decoration: none; font-weight: 500; white-space: nowrap;">
+            Start studying →
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Strengths & Weaknesses -->
+    {% if weaknesses or strengths %}
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+      {% if weaknesses %}
+      <div style="background: #FFF3E0; border-radius: 8px; padding: 1rem 1.25rem; border-left: 3px solid #E65100;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #E65100;">Needs Focus</h3>
+        {% for w in weaknesses %}
+        <p style="font-size: 0.85rem; margin: 0.25rem 0;">{{ w.name }} — <strong>{{ w.pct }}%</strong></p>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if strengths %}
+      <div style="background: #E8F5E9; border-radius: 8px; padding: 1rem 1.25rem; border-left: 3px solid #2E7D32;">
+        <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: #2E7D32;">Strong Areas</h3>
+        {% for s in strengths %}
+        <p style="font-size: 0.85rem; margin: 0.25rem 0;">{{ s.name }} — <strong>{{ s.pct }}%</strong></p>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Topic Detail -->
+    <div style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.15rem; margin-bottom: 1rem;">Topic Breakdown</h2>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        {% for topic in topic_results %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: var(--surface); border-radius: 6px;">
+          <div>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">{{ topic.domain_name }} › </span>
+            <span style="font-weight: 500;">{{ topic.topic }}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="background: var(--border); border-radius: 3px; width: 60px; height: 6px; overflow: hidden;">
+              <div style="background: {% if topic.pct >= 80 %}#2E7D32{% elif topic.pct >= 60 %}#E65100{% else %}#C62828{% endif %}; height: 100%; width: {{ topic.pct }}%; border-radius: 3px;"></div>
+            </div>
+            <span style="font-size: 0.8rem; font-weight: 600; min-width: 35px; text-align: right;">{{ topic.pct }}%</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="text-align: center; padding: 1rem 0;">
+      <a href="/quiz/{{ study_order[0].slug }}" class="btn btn-primary btn-lg" style="display: inline-block; text-decoration: none; padding: 0.75rem 2rem; font-size: 1rem; margin-bottom: 0.75rem;">
+        Start with {{ study_order[0].name }}
+      </a>
+      <br>
+      <a href="/" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">← Back to Dashboard</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

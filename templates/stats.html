@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Progress — Tupelo Nursing Exam Prep
+{% endblock %}
+
+{% block content %}
+
+<div>
+
+  <!-- Readiness Ring -->
+  <div style="text-align: center; padding-bottom: 28px; border-bottom: 1px solid var(--border);">
+    <div class="readiness-ring">
+      <svg viewBox="0 0 100 100">
+        <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+        <circle class="progress-ring-circle" cx="50" cy="50" r="42"
+          stroke-dasharray="{{ 2 * 3.14159 * 42 }}"
+          stroke-dashoffset="{{ 2 * 3.14159 * 42 * (1 - overall_readiness / 100) }}"/>
+      </svg>
+      <span class="readiness-pct">{{ overall_readiness }}%</span>
+    </div>
+    <div style="font-family: var(--font-heading); font-weight: 700; margin-bottom: 4px;">Overall Readiness</div>
+    <div class="text-muted" style="font-size: 0.82rem;">Keep going — every question counts.</div>
+  </div>
+
+  <!-- Domain Indicators -->
+  <div style="padding: 20px 0; border-bottom: 1px solid var(--border);">
+    {% for dom in domains %}
+    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">
+      <span class="domain-dot" style="background: {{ dom.color }};"></span>
+      <span style="flex: 1; font-size: 0.88rem; font-weight: 500;">{{ dom.name }}</span>
+      <span style="font-weight: 700; font-size: 0.88rem; color: {{ dom.color }};">{{ dom.readiness_pct }}%</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Streak -->
+  {% if current_streak > 0 %}
+  <div class="streak" style="border-bottom: 1px solid var(--border);">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+      <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.2-4.5-9-10-9z"/>
+        <circle cx="7.5" cy="11" r="1.5"/>
+        <circle cx="10.5" cy="7" r="1.5"/>
+        <circle cx="16.5" cy="11" r="1.5"/>
+        <circle cx="13.5" cy="7" r="1.5"/>
+      </svg>
+      <span class="streak-number">{{ current_streak }}</span>
+    </div>
+    <div class="streak-label">Day Streak</div>
+    <div class="streak-sub">Come back tomorrow to keep it going</div>
+  </div>
+  {% endif %}
+
+  <!-- Domain Breakdown -->
+  <div style="padding-top: 24px;">
+    <h2 class="section-title">By Domain</h2>
+
+    {% for dom in domains %}
+    <div class="subject-breakdown">
+      <div class="subject-breakdown-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="domain-dot" style="background: {{ dom.color }};"></span>
+          <span class="subject-breakdown-name">{{ dom.name }}</span>
+        </div>
+        <span class="subject-breakdown-pct" style="color: {{ dom.color }};">{{ dom.readiness_pct }}%</span>
+      </div>
+      <div class="subject-breakdown-track">
+        <div class="subject-breakdown-fill" style="width: {{ dom.readiness_pct }}%; background: {{ dom.color }};"></div>
+      </div>
+      <div class="subject-breakdown-sub">{{ dom.strong_topics }} of {{ dom.total_topics }} topics strong</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Weekly Activity -->
+  {% if weekly_activity %}
+  <div style="padding-top: 28px; border-top: 1px solid var(--border);">
+    <h2 class="section-title">This Week</h2>
+    <div class="weekly-chart">
+      {% for day in weekly_activity %}
+      <div class="weekly-bar-col">
+        {% if day.count > 0 %}
+        <span class="weekly-bar-count">{{ day.count }}</span>
+        {% endif %}
+        <div class="weekly-bar" style="height: {{ (day.count / (weekly_activity | map(attribute='count') | max | default(1)) * 80) if day.count > 0 else 2 }}px;"></div>
+        <span class="weekly-bar-label">{{ day.day[-2:] }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recent Quizzes -->
+  {% if recent_quizzes %}
+  <div style="padding-top: 28px; border-top: 1px solid var(--border);">
+    <h2 class="section-title">Recent Quizzes</h2>
+    <ul class="score-list">
+      {% for q in recent_quizzes %}
+      <li class="score-item">
+        <div>
+          <div class="score-item-name">{{ q.domain_name }}</div>
+          <div class="score-item-date">{{ q.date }}</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="score-item-pct" style="color: {% if q.score >= 80 %}var(--correct){% elif q.score >= 60 %}var(--warning){% else %}var(--wrong){% endif %};">{{ q.score }}%</div>
+          <div class="score-item-questions">{{ q.total_questions }} questions</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+</div>
+
+{% include "analytics.html" %}
+{% endblock %}

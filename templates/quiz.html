@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}{{ domain_name }} — Question {{ current_q }}{% endblock %}
+
+{% block content %}
+
+<!-- Progress Bar -->
+<div class="progress-bar-track">
+  <div class="progress-bar-fill" style="width: {{ (current_q / total_q * 100) | round(1) }}%;"></div>
+</div>
+
+<!-- Question Top Bar -->
+<div class="question-topbar">
+  <button class="question-back" onclick="history.back()">← Back</button>
+  <span class="question-domain-tag">{{ domain_name }}</span>
+  <span class="question-counter">{{ current_q }} / {{ total_q }}</span>
+</div>
+
+<!-- Stimulus Passage -->
+{% if question.stimulus %}
+<div class="stimulus-block">
+  <div class="stimulus-label">Read the following passage</div>
+  {{ question.stimulus|safe }}
+</div>
+{% endif %}
+
+<!-- Question Text -->
+<div class="question-text">
+  {{ question.question_text|safe }}
+</div>
+
+{% if feedback %}
+{# ══════════════════════════════════════════
+   FEEDBACK STATE (after submit)
+   ══════════════════════════════════════════ #}
+
+<div class="choices feedback-locked">
+  {% set letters = ['A', 'B', 'C', 'D'] %}
+  {% set opts = question.options if question.options is defined else [] %}
+
+  {% for i in range(opts|length) %}
+  {% set is_selected = (opts[i] == selected) %}
+  {% set is_right = (opts[i] == correct_answer) %}
+
+  <label class="choice
+    {% if is_right %}correct
+    {% elif is_selected and not is_correct %}wrong
+    {% endif %}"
+    id="choice-{{ i }}">
+    <span class="choice-letter">{{ letters[i] }}</span>
+    <span class="choice-text">{{ opts[i]|safe }}</span>
+    {% if is_right %}
+    <span class="choice-letter" style="background:var(--correct);border-color:var(--correct);color:#fff;">✓</span>
+    {% elif is_selected and not is_correct %}
+    <span class="choice-letter" style="background:var(--wrong);border-color:var(--wrong);color:#fff;">✗</span>
+    {% endif %}
+  </label>
+  {% endfor %}
+</div>
+
+<!-- Result banner -->
+<div class="feedback-banner {% if is_correct %}feedback-correct{% else %}feedback-wrong{% endif %}">
+  {% if is_correct %}
+  <span class="feedback-icon">✓</span>
+  <span>Correct!</span>
+  {% else %}
+  <span class="feedback-icon">✗</span>
+  <span>Not quite — the answer is <strong>{{ correct_answer }}</strong></span>
+  {% endif %}
+</div>
+
+{# Misconception-first feedback. Placed before the per-choice breakdown on purpose:
+   the student should read why THEY chose what they chose before reading what each
+   option is. Every string here comes from coach/copy.py, which is letter-free and
+   tested for overclaiming. #}
+{% if coach_feedback and coach_feedback.show %}
+<div class="coach-note coach-note-{{ coach_feedback.state | lower }}">
+  <div class="coach-note-head">
+    <span class="coach-note-title">{{ coach_feedback.headline }}</span>
+    {% if coach_feedback.confidence_note %}
+    <span class="coach-note-sub">{{ coach_feedback.confidence_note }}</span>
+    {% endif %}
+  </div>
+
+  {% if coach_feedback.has_diagnosis %}
+  <div class="coach-note-row">
+    <span class="coach-note-label">{{ coach_feedback.trap_intro }}</span>
+    <p class="coach-note-text">{{ coach_feedback.trap }}</p>
+  </div>
+  <div class="coach-note-row">
+    <span class="coach-note-label">{{ coach_feedback.correction_intro }}</span>
+    <p class="coach-note-text">{{ coach_feedback.correction }}</p>
+  </div>
+  {% endif %}
+
+  {% if coach_feedback.generic %}
+  <p class="coach-note-generic">{{ coach_feedback.generic_note }}</p>
+  {% endif %}
+
+  {% if coach_feedback.read_section %}
+  {% if coach_feedback.read_url %}
+  <p class="coach-note-read">{{ coach_feedback.read_intro }} <a href="{{ coach_feedback.read_url }}" target="_blank" rel="noopener noreferrer">{{ coach_feedback.read_section }}</a></p>
+  {% else %}
+  <p class="coach-note-read">{{ coach_feedback.read_intro }} <strong>{{ coach_feedback.read_section }}</strong></p>
+  {% endif %}
+  {% endif %}
+</div>
+{% endif %}
+
+{% if feedback_mode == 'teach' or (feedback_mode == 'hint' and not is_correct) %}
+{# Full per-choice breakdown (teach mode or hint + wrong) #}
+<div class="feedback-breakdown">
+  {% set letters = ['A', 'B', 'C', 'D'] %}
+  {% set opts = question.options if question.options is defined else [] %}
+  {% for i in range(opts|length) %}
+  {% set opt_text = opts[i] %}
+  {% set is_right = (opt_text == correct_answer) %}
+  <div class="breakdown-item {% if is_right %}breakdown-correct{% else %}breakdown-wrong{% endif %}">
+    <div class="breakdown-header">
+      <span class="breakdown-letter">{{ letters[i] }}</span>
+      <span class="breakdown-answer">{{ opt_text|safe }}</span>
+      {% if is_right %}
+      <span class="breakdown-badge badge-correct">✓ Correct</span>
+      {% else %}
+      <span class="breakdown-badge badge-wrong">✗</span>
+      {% endif %}
+    </div>
+    {% if is_right %}
+    <div class="breakdown-reason">{{ explanation|safe }}</div>
+    {% elif wrong_explanation_map and wrong_explanation_map.get(opt_text) %}
+    <div class="breakdown-reason">{{ wrong_explanation_map[opt_text]|safe }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+{% elif feedback_mode == 'hint' and is_correct %}
+{# Hint mode correct: show just the correct explanation #}
+<div class="feedback-brief" style="margin-bottom: 12px;">
+  <p style="font-size: 0.88rem; color: var(--text-muted);">Nice work! That one clicked.</p>
+  {% if explanation %}
+  <button class="reveal-link" id="reveal-btn">Want to see why?</button>
+  <div class="feedback-explanation hidden" id="explanation-box">
+    <div class="explanation-label">Why this is right</div>
+    <div class="explanation-text">{{ explanation|safe }}</div>
+  </div>
+  {% endif %}
+</div>
+
+{% else %}
+{# Quiz mode: per-choice breakdown only if wrong #}
+{% if not is_correct %}
+<div class="feedback-breakdown">
+  {% set letters = ['A', 'B', 'C', 'D'] %}
+  {% set opts = question.options if question.options is defined else [] %}
+  {% for i in range(opts|length) %}
+  {% set opt_text = opts[i] %}
+  {% set is_right = (opt_text == correct_answer) %}
+  {% set was_selected = (opt_text == selected) %}
+  {% if is_right or was_selected %}
+  <div class="breakdown-item {% if is_right %}breakdown-correct{% else %}breakdown-wrong{% endif %}">
+    <div class="breakdown-header">
+      <span class="breakdown-letter">{{ letters[i] }}</span>
+      <span class="breakdown-answer">{{ opt_text|safe }}</span>
+      {% if is_right %}
+      <span class="breakdown-badge badge-correct">✓ Correct</span>
+      {% else %}
+      <span class="breakdown-badge badge-wrong">Your answer</span>
+      {% endif %}
+    </div>
+    {% if is_right %}
+    <div class="breakdown-reason">{{ explanation|safe }}</div>
+    {% elif wrong_explanation_map and wrong_explanation_map.get(opt_text) %}
+    <div class="breakdown-reason">{{ wrong_explanation_map[opt_text]|safe }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Next / See Results -->
+<div style="margin-top: 20px;">
+  {% if next_url %}
+  <a href="{{ next_url }}" class="submit-btn">Next Question →</a>
+  {% else %}
+  <a href="/results/{{ domain_slug }}/{{ quiz_id }}" class="submit-btn">See Results →</a>
+  {% endif %}
+</div>
+
+{% else %}
+{# ══════════════════════════════════════════
+   INPUT STATE (before submit)
+   ══════════════════════════════════════════ #}
+
+<form method="POST" action="/quiz/{{ domain_slug }}/{{ quiz_id }}/{{ current_q - 1 }}/answer" id="quiz-form">
+  <div class="choices">
+    {% set letters = ['A', 'B', 'C', 'D'] %}
+    {% set opts = question.options if question.options is defined else [] %}
+
+    {% for i in range(opts|length) %}
+    <label class="choice" id="choice-{{ i }}">
+      <input type="radio" name="selected" value="{{ opts[i] }}" hidden>
+      <span class="choice-letter">{{ letters[i] }}</span>
+      <span class="choice-text">{{ opts[i]|safe }}</span>
+    </label>
+    {% endfor %}
+  </div>
+
+  <!-- Confidence Selector -->
+  <div class="confidence-section">
+    <div class="confidence-label">How confident are you?</div>
+    <div class="confidence-track">
+      <div class="confidence-node" data-value="1" id="conf-1">
+        <div class="confidence-dot"></div>
+        <span class="confidence-node-text">Not sure</span>
+      </div>
+      <div class="confidence-node" data-value="2" id="conf-2">
+        <div class="confidence-dot"></div>
+        <span class="confidence-node-text">Kinda sure</span>
+      </div>
+      <div class="confidence-node" data-value="3" id="conf-3">
+        <div class="confidence-dot"></div>
+        <span class="confidence-node-text">Got this</span>
+      </div>
+    </div>
+    <div class="confidence-hint" id="confidence-hint">Tap to set your confidence</div>
+  </div>
+
+  <button type="submit" class="submit-btn" id="submit-btn" disabled>Submit Answer</button>
+</form>
+{% endif %}
+
+{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+  {% if feedback %}
+  // ── Feedback state: wire reveal buttons ──
+  var revealBtn = document.getElementById("reveal-btn");
+  var explBox = document.getElementById("explanation-box");
+  if (revealBtn && explBox) {
+    revealBtn.addEventListener("click", function() {
+      explBox.classList.remove("hidden");
+      revealBtn.style.display = "none";
+    });
+  }
+  {% else %}
+  // ── Input state: wire choices + confidence + submit ──
+  var form = document.getElementById("quiz-form");
+  var submitBtn = document.getElementById("submit-btn");
+  var startTime = Date.now();
+  var submitted = false;
+  var confidenceValue = 0;
+
+  var hints = {
+    0: "Tap to set your confidence",
+    1: "We'll explain the concept after you answer",
+    2: "You'll get a hint if you need it",
+    3: "Quick quiz — straight to grading"
+  };
+
+  var confNodes = document.querySelectorAll(".confidence-node");
+  var confHint = document.getElementById("confidence-hint");
+
+  confNodes.forEach(function(node) {
+    node.addEventListener("click", function() {
+      if (submitted) return;
+      var val = parseInt(node.getAttribute("data-value"));
+      confidenceValue = val;
+
+      confNodes.forEach(function(n) { n.classList.remove("active"); });
+      node.classList.add("active");
+      confHint.textContent = hints[val];
+      confHint.style.color = "var(--text-muted)";
+
+      var selected = form.querySelector("input[name='selected']:checked");
+      if (selected) submitBtn.disabled = false;
+    });
+  });
+
+  var choices = document.querySelectorAll(".choice");
+  choices.forEach(function(c) {
+    c.addEventListener("click", function(e) {
+      if (submitted) return;
+      choices.forEach(function(x) { x.classList.remove("selected"); });
+      c.classList.add("selected");
+      c.querySelector("input").checked = true;
+      if (confidenceValue > 0) submitBtn.disabled = false;
+    });
+  });
+
+  form.addEventListener("submit", function(e) {
+    if (submitted) { e.preventDefault(); return; }
+    submitted = true;
+
+    var elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    var input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "time_elapsed";
+    input.value = elapsed;
+    form.appendChild(input);
+
+    var confInput = document.createElement("input");
+    confInput.type = "hidden";
+    confInput.name = "confidence";
+    confInput.value = confidenceValue;
+    form.appendChild(confInput);
+
+    submitBtn.textContent = "Submitting…";
+    submitBtn.disabled = true;
+  });
+  {% endif %}
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{% if returning %}Your Dashboard Link{% else %}Account Created{% endif %} — Tupelo Nursing Exam Prep{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block content %}
+<div class="auth-card" style="max-width:560px">
+  {% if returning %}
+  <h1>Welcome back, {{ user.display_name or 'Student' }}</h1>
+  <p class="subtitle">Here is your personal dashboard link.</p>
+  {% else %}
+  <h1>Your account is ready</h1>
+  <p class="subtitle">This is your personal dashboard link — it's your login, so save it somewhere safe.</p>
+  {% endif %}
+
+  <div class="link-grant" style="margin:18px 0 6px">
+    <input type="text" id="dashboard-link" readonly
+           value="{{ dashboard_link }}"
+           style="width:100%;padding:12px 14px;font-size:0.95rem;border:1px solid var(--a-gold,#d4a72c);border-radius:8px;background:#fff;color:var(--a-navy,#14213d);box-sizing:border-box"
+           onclick="this.select()">
+    <button type="button" id="copy-link-btn" class="submit-btn"
+            style="width:100%;margin-top:10px;padding:12px;font-size:0.95rem;cursor:pointer">
+      Copy Link
+    </button>
+    <div id="copy-note" style="display:none;margin-top:8px;font-size:0.85rem;color:#2e7d32;text-align:center">Copied! Open it in a new tab to test, or bookmark it for next time.</div>
+  </div>
+
+  <p class="auth-note" style="font-size:0.85rem;color:var(--text-muted,#666);margin-top:12px;line-height:1.55">
+    Open this link and you'll land straight on your dashboard — from this
+    device or any other.
+    {% if email_sent %}We've also emailed it to you so you never lose it.{% endif %}
+  </p>
+
+  <div style="margin-top:18px">
+    <a href="{{ next }}" class="submit-btn" style="display:block;text-align:center;text-decoration:none;color:#fff;padding:13px;font-size:1rem">
+      Go to My Dashboard →
+    </a>
+  </div>
+
+  <p class="auth-link" style="margin-top:16px"><a href="/logout">Not you? Log out</a></p>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy-link-btn');
+    var note = document.getElementById('copy-note');
+    var field = document.getElementById('dashboard-link');
+    if (!btn || !field) return;
+    btn.addEventListener('click', function () {
+      field.focus();
+      field.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(field.value).then(function () {
+          if (note) note.style.display = 'block';
+        });
+      } else if (ok && note) {
+        note.style.display = 'block';
+      }
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{% if pilot_full %}Pilot Full — Tupelo Nursing Exam Prep{% else %}Sign Up — Tupelo Nursing Exam Prep{% endif %}{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block content %}
+{% if pilot_full %}
+<div class="auth-card">
+  <h1>Our first pilot cohort is full</h1>
+  <p class="subtitle">Tupelo&rsquo;s first pilot is limited to {{ pilot_cap }} students so everyone in it gets a fast, dependable study experience. We&rsquo;ve reached that limit.</p>
+
+  {% if waitlist_done %}
+    <div class="pilot-note">
+      <strong>You&rsquo;re on the list.</strong><br>
+      We saved <em>{{ waitlist_email }}</em>. When a seat opens in the next cohort we&rsquo;ll email you there &mdash; nothing else you need to do.
+    </div>
+  {% elif waitlist_existing %}
+    <div class="pilot-note">
+      <strong>That email already has an account.</strong><br>
+      <a href="/login">Get your dashboard link &rarr;</a>
+    </div>
+  {% else %}
+    {% if waitlist_dupe %}
+      <div class="pilot-note"><strong>You&rsquo;re already on the list</strong> &mdash; we&rsquo;ll be in touch when a seat opens.</div>
+    {% endif %}
+    <p class="subtitle" style="margin-bottom:16px">We&rsquo;re opening more seats soon. Leave your email and we&rsquo;ll tell you the moment one does.</p>
+    <form method="POST" action="/waitlist">
+      <input type="hidden" name="src" value="{{ src|default('') }}">
+      <div class="form-group">
+        <label for="wl_email">Email</label>
+        <input type="email" id="wl_email" name="email" placeholder="you@example.com" required autofocus>
+      </div>
+      <div class="hp-field" aria-hidden="true">
+        <label for="website">Leave this field blank</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="submit-btn" style="margin-top: 8px;">Notify me when a seat opens</button>
+    </form>
+  {% endif %}
+
+  <p class="auth-link">Already have an account? <a href="/login">Get your dashboard link</a></p>
+</div>
+
+<style>
+  .hp-field{position:absolute!important;left:-9999px!important;top:auto!important;
+    width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+  .pilot-note{background:rgba(15,33,54,.05);border:1px solid rgba(15,33,54,.12);
+    border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:.95rem;line-height:1.55}
+</style>
+{% else %}
+<div class="auth-card">
+  <h1>Create your Tupelo account</h1>
+  <p class="subtitle">Free. No password. Register and get your personal dashboard link.</p>
+
+  <form method="POST" action="/signup">
+    <input type="hidden" name="src" value="{{ src|default('') }}">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required autofocus>
+    </div>
+    <div class="form-group">
+      <label for="display_name">Display Name</label>
+      <input type="text" id="display_name" name="display_name" placeholder="Your name (optional)">
+    </div>
+      <div class="hp-field" aria-hidden="true">
+        <label for="website">Leave this field blank</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+    <button type="submit" class="submit-btn" style="margin-top: 8px;">Create Account &amp; Get My Link</button>
+  </form>
+
+  <p class="auth-note" style="font-size:0.85rem;color:var(--text-muted,#666);margin-top:14px;line-height:1.5">
+    No password needed. When you register, we automatically issue your personal
+    dashboard link — save it or bookmark it and you're in from any device.
+  </p>
+
+  <p class="auth-link">Already have an account? <a href="/login">Get your dashboard link</a></p>
+</div>
+{% endif %}
+{% endblock %}

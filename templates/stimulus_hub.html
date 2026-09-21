@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Stimulus Training — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="max-width: 640px; margin: 1.5rem auto;">
+
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Stimulus Training</h1>
+    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
+      The TEAS/HESI uses <strong>stimulus passages</strong> — excerpts from historical documents, court rulings,
+      and speeches. Learning to read them efficiently is the single most valuable skill you can develop.
+    </p>
+
+    <!-- Why this matters -->
+    <div style="background: linear-gradient(135deg, rgba(27,58,92,0.06) 0%, rgba(27,58,92,0.12) 100%); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid rgba(27,58,92,0.15);">
+      <p style="font-weight: 600; margin-bottom: 0.6rem;">Why stimulus literacy matters</p>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: 0.3rem 0; font-size: 0.9rem; color: var(--text-secondary);">✦ ~{{ total_stimulus }} of {{ "{:,}".format(total_questions) }} TEAS/HESI questions use stimulus passages</li>
+        <li style="padding: 0.3rem 0; font-size: 0.9rem; color: var(--text-secondary);">✦ Most students lose points not from lack of knowledge, but from misreading the passage</li>
+        <li style="padding: 0.3rem 0; font-size: 0.9rem; color: var(--text-secondary);">✦ This training teaches you a 3-step method used by top scorers</li>
+      </ul>
+    </div>
+
+    <!-- The Method -->
+    <div style="margin-bottom: 1.5rem;">
+      <p style="font-weight: 600; margin-bottom: 0.75rem;">The 3-Step Method</p>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem; background: var(--surface); border-radius: 8px;">
+          <span style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: var(--navy); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">1</span>
+          <div>
+            <strong style="font-size: 0.92rem;">Read & Identify</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0;">Read the passage. Identify the document type, author, era, and main argument.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem; background: var(--surface); border-radius: 8px;">
+          <span style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: var(--navy); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">2</span>
+          <div>
+            <strong style="font-size: 0.92rem;">Annotate</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0;">Jot down key phrases, claims, and anything that connects to TEAS/HESI concepts you've studied.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem; background: var(--surface); border-radius: 8px;">
+          <span style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: var(--navy); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 700; flex-shrink: 0;">3</span>
+          <div>
+            <strong style="font-size: 0.92rem;">Predict & Answer</strong>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.2rem 0 0;">Read the question. Before looking at options, predict what the answer should be. Then select.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Domain Selection -->
+    <div style="margin-bottom: 1.5rem;">
+      <p style="font-weight: 600; margin-bottom: 0.75rem;">Practice by Domain</p>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        {% for domain in domains %}
+        <a href="/stimulus/practice/{{ domain.id }}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; background: var(--surface); border-radius: 8px; text-decoration: none; color: var(--text); border: 1px solid var(--border); transition: border-color 0.15s;"
+           onmouseover="this.style.borderColor='var(--navy)'"
+           onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-weight: 600;">{{ domain.name }}</span>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">{{ domain.stimulus_count }} passages</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Mixed practice -->
+    <div style="text-align: center; padding: 1rem 0;">
+      <a href="/stimulus/practice" style="display: inline-block; background: var(--navy); color: white; padding: 0.75rem 2rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.95rem;">
+        Mixed Practice (All Domains)
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

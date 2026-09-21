@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Stimulus Practice Setup — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="max-width: 480px; margin: 2rem auto; text-align: center;">
+
+    <h1 style="font-size: 1.35rem; margin-bottom: 0.5rem;">
+      {% if domain_name %}{{ domain_name }}{% else %}Mixed{% endif %} Stimulus Practice
+    </h1>
+    <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 1.5rem;">
+      Read passages using the 3-step method, then answer questions based on them.
+    </p>
+
+    <form method="POST" action="/stimulus/practice{% if domain_id %}/{{ domain_id }}{% endif %}">
+      <div style="margin-bottom: 1.25rem;">
+        <label style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; text-align: left;">
+          How many passages?
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
+          {% for n in [3, 5, 10, 15] %}
+          <label style="display: flex; align-items: center; justify-content: center; padding: 0.65rem; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: border-color 0.15s;"
+                 onmouseover="this.style.borderColor='var(--navy)'"
+                 onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='var(--border)'">
+            <input type="radio" name="count" value="{{ n }}" {% if n == 5 %}checked{% endif %} style="display: none;">
+            {{ n }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
+        Start Practice
+      </button>
+    </form>
+
+    <div style="margin-top: 1rem;">
+      <a href="/stimulus" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">← Back to Stimulus Hub</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Minimal JS for radio button styling -->
+<script>
+document.querySelectorAll('label input[type="radio"]').forEach(input => {
+  input.addEventListener('change', () => {
+    document.querySelectorAll('label input[type="radio"]').forEach(i => {
+      i.closest('label').style.borderColor = i.checked ? 'var(--navy)' : 'var(--border)';
+      i.closest('label').style.background = i.checked ? '#f0f4f8' : '';
+    });
+  });
+});
+</script>
+{% endblock %}

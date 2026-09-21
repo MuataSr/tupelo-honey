@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnostic Assessment — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="diagnostic-intro" style="max-width: 640px; margin: 2rem auto; text-align: center;">
+
+    <div style="margin-bottom: 1.5rem;">
+      <span style="font-size: 2.5rem;">📋</span>
+    </div>
+
+    <h1 style="font-size: 1.75rem; margin-bottom: 0.75rem;">Diagnostic Assessment</h1>
+
+    {% if already_taken %}
+    <div class="alert" style="background: #E8F5E9; border-left: 4px solid #2E7D32; padding: 1rem 1.25rem; margin: 1.5rem 0; text-align: left;">
+      <strong>You've already completed the diagnostic.</strong> You can retake it to get a fresh baseline, but your previous results will be replaced.
+    </div>
+    {% else %}
+    <p style="font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+      Before you start studying, let's find out where you stand. This 20-question assessment
+      covers all four TEAS/HESI domains and gives you a personalized study plan.
+    </p>
+    {% endif %}
+
+    <div style="text-align: left; background: var(--surface); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+      <p style="font-weight: 600; margin-bottom: 0.75rem;">What to expect:</p>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        <li style="padding: 0.35rem 0; color: var(--text-secondary);">✦ 20 questions — 5 per domain</li>
+        <li style="padding: 0.35rem 0; color: var(--text-secondary);">✦ Mixed difficulty (easy, medium, hard)</li>
+        <li style="padding: 0.35rem 0; color: var(--text-secondary);">✦ No feedback during the test</li>
+        <li style="padding: 0.35rem 0; color: var(--text-secondary);">✦ Results + personalized study plan at the end</li>
+        <li style="padding: 0.35rem 0; color: var(--text-secondary);">✦ Takes about 10–15 minutes</li>
+      </ul>
+    </div>
+
+    <div style="text-align: left; background: var(--surface); border-radius: 8px; padding: 1.25rem; margin-bottom: 2rem;">
+      <p style="font-weight: 600; margin-bottom: 0.75rem;">The four domains:</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <div style="padding: 0.5rem; background: rgba(27,58,92,0.06); border-radius: 4px;">
+          <strong>🏛️ Reading</strong><br>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">Government principles, nursing participation</span>
+        </div>
+        <div style="padding: 0.5rem; background: rgba(27,58,92,0.06); border-radius: 4px;">
+          <strong>📜 Math</strong><br>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">Structure, amendments, rights</span>
+        </div>
+        <div style="padding: 0.5rem; background: rgba(27,58,92,0.06); border-radius: 4px;">
+          <strong>📖 Science</strong><br>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">Declaration, Federalist Papers, Bill of Rights</span>
+        </div>
+        <div style="padding: 0.5rem; background: rgba(27,58,92,0.06); border-radius: 4px;">
+          <strong>⚖️ English & Language</strong><br>
+          <span style="font-size: 0.85rem; color: var(--text-secondary);">Supreme Court cases, nursing movements</span>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" action="/diagnostic">
+      <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; max-width: 320px; padding: 0.85rem; font-size: 1.05rem;">
+        {% if already_taken %}Retake Diagnostic{% else %}Start Diagnostic{% endif %}
+      </button>
+    </form>
+
+    <div style="margin-top: 1.25rem;">
+      <a href="/" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;">← Skip for now</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

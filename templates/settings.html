@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Settings — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+
+<div class="settings-page">
+
+  {% if current_user and not current_user.get('is_anonymous') %}
+
+  <!-- Profile -->
+  <div class="settings-section">
+    <div class="settings-section-title">Profile</div>
+    <div class="settings-row">
+      <span class="settings-label">Name</span>
+      <span class="settings-value">{{ current_user.display_name }}</span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Email</span>
+      <span class="settings-value">{{ current_user.email }}</span>
+    </div>
+  </div>
+
+  <!-- Exam Date -->
+  <div class="settings-section">
+    <div class="settings-section-title">Exam</div>
+    <form method="POST" action="/settings/exam-date">
+      <div class="form-group">
+        <label for="exam_date">Exam date</label>
+        <input type="date" id="exam_date" name="exam_date"
+               value="{{ current_user.exam_date if current_user.exam_date else '' }}">
+      </div>
+      <button type="submit" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.82rem;">Save Date</button>
+    </form>
+  </div>
+
+  <!-- About -->
+  <div class="settings-section">
+    <div class="settings-section-title">About</div>
+    <div class="settings-row">
+      <span class="settings-label">Version</span>
+      <span class="settings-value">{{ version }}</span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Domains</span>
+      <span class="settings-value">Reading · Math · Science · English & Language</span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Questions</span>
+      <span class="settings-value">{{ total_questions }} items</span>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="settings-section" style="border-bottom: none;">
+    <div class="settings-section-title">Danger Zone</div>
+    <form method="POST" action="/settings/reset" onsubmit="return confirm('This will erase all your progress. Are you sure?')">
+      <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 0.82rem;">Reset All Progress</button>
+    </form>
+  </div>
+
+  {% else %}
+
+  <!-- Not Logged In -->
+  <div class="settings-section">
+    <div class="settings-section-title">Account</div>
+    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
+      Create an account to save your progress across devices.
+    </p>
+    <a href="/signup" class="btn btn-primary" style="display: block; text-align: center; margin-bottom: 8px;">Create Account</a>
+    <a href="/login" class="btn btn-secondary" style="display: block; text-align: center;">Log In</a>
+  </div>
+
+  <!-- About (anonymous) -->
+  <div class="settings-section" style="border-bottom: none;">
+    <div class="settings-section-title">About</div>
+    <div class="settings-row">
+      <span class="settings-label">Version</span>
+      <span class="settings-value">{{ version }}</span>
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Domains</span>
+      <span class="settings-value">Reading · Math · Science · English & Language</span>
+    </div>
+  </div>
+
+  {% endif %}
+
+  <div class="version-info">Mu2 Solutions — Built for students, by students.</div>
+
+</div>
+
+{% endblock %}

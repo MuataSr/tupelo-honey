@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Home — Tupelo{% endblock %}
+
+{% block crumb %}Home{% endblock %}
+
+{% block content %}
+
+<!-- Heading -->
+<div class="a-heading">
+  <div>
+    <h1>{{ greeting }}, {{ display_name }}</h1>
+    <p class="lede">
+      {% if exam_days is not none %}
+      You're <strong style="color:var(--a-gray-700)">{{ overall_readiness }}% ready</strong> — {{ exam_days }} day{{ 's' if exam_days != 1 }} to your TEAS/HESI exam.
+      {% else %}
+      You're <strong style="color:var(--a-gray-700)">{{ overall_readiness }}% ready</strong> for the TEAS & HESI. Every question counts.
+      {% endif %}
+    </p>
+  </div>
+  <div class="a-actions">
+    <a href="/stats" class="btn-a btn-a-ghost">View progress</a>
+    <a href="/quiz/mixed" class="btn-a btn-a-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Take a quiz
+    </a>
+  </div>
+</div>
+
+<!-- Path: where you are in the loop -->
+<div class="path-track" aria-label="Your path: Diagnose, Practice, Review, Re-check">
+  {% for step in path_steps %}
+  <div class="path-step {% if step.state == 'done' %}is-done{% elif step.state == 'current' %}is-current{% endif %}">
+    <span class="path-dot">{% if step.state == 'done' %}&#10003;{% else %}{{ loop.index }}{% endif %}</span>
+    <span class="path-label">{{ step.label }}</span>
+  </div>
+  {% if not loop.last %}<span class="path-connector" aria-hidden="true"></span>{% endif %}
+  {% endfor %}
+</div>
+
+<!-- Next step: one clear action from the Coach -->
+<div class="next-action">
+  <div class="next-action-body">
+    <div class="next-action-eyebrow">{{ next_action.eyebrow }}</div>
+    <div class="next-action-title">{{ next_action.title }}</div>
+    <div class="next-action-detail">{{ next_action.detail }}</div>
+  </div>
+  <a href="{{ next_action.cta_url }}" class="btn-a btn-a-primary">{{ next_action.cta_text }}</a>
+</div>
+
+<!-- Stat cards -->
+<div class="a-cards">
+  <div class="a-card">
+    <div class="ic-row">
+      <span class="a-chip-icon ic-navy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 13 5 5L20 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="a-tag green">▼ ready</span>
+    </div>
+    <div class="c-label">Overall readiness</div>
+    <div class="c-value">{{ overall_readiness }}<small>%</small></div>
+    <div class="a-track"><i style="width: {{ overall_readiness }}%; background: {% if overall_readiness >= 80 %}var(--a-green-500){% elif overall_readiness >= 50 %}var(--a-navy-500){% else %}var(--a-gold-500){% endif %};"></i></div>
+    <div class="c-sub">across all four areas</div>
+  </div>
+
+  <div class="a-card">
+    <div class="ic-row">
+      <span class="a-chip-icon ic-gold">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </div>
+    <div class="c-label">Areas to strengthen</div>
+    <div class="c-value">{{ domains | map(attribute='weak_count') | sum }}<small> topic{{ 's' if (domains | map(attribute='weak_count') | sum) != 1 }}</small></div>
+    <div class="c-sub">below 60% mastery</div>
+  </div>
+
+  <div class="a-card">
+    <div class="ic-row">
+      <span class="a-chip-icon ic-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 5.6L20 8.6l-4.2 4 1.1 5.8L12 15.5l-4.9 2.9 1.1-5.8L4 8.6l5.6-1z"/></svg>
+      </span>
+    </div>
+    <div class="c-label">Latest session</div>
+    {% if recent_sessions %}
+    <div class="c-value">{{ recent_sessions[0].score }}<small>%</small></div>
+    <div class="c-sub">{{ recent_sessions[0].domain_name }} · {{ recent_sessions[0].date }}</div>
+    {% else %}
+    <div class="c-value" style="font-size:20px">Not yet</div>
+    <div class="c-sub">finish your first quiz above</div>
+    {% endif %}
+  </div>
+
+  <div class="a-card">
+    <div class="ic-row">
+      <span class="a-chip-icon ic-red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </span>
+    </div>
+    <div class="c-label">Exam countdown</div>
+    {% if exam_days is not none %}
+    <div class="c-value">{{ exam_days }}<small> days</small></div>
+    <div class="c-sub">keep the streak alive</div>
+    {% else %}
+    <div class="c-value" style="font-size:20px">Set a date</div>
+    <div class="c-sub"><a href="/settings" style="color:var(--a-navy-600);font-weight:600">in Settings →</a></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- CTA band -->
+<div class="a-cta">
+  <div>
+    <div class="cta-title">Ready for your next session?</div>
+    <div class="cta-sub">Mixed review pulls questions from all four nursing science areas — a great daily warm-up.</div>
+  </div>
+  <div class="a-actions" style="flex-shrink:0">
+    <a href="/diagnostic" class="btn-a" style="background:rgba(255,255,255,.12);color:#fff">Diagnostic</a>
+    <a href="/quiz/mixed" class="btn-a btn-a-gold">Start mixed review</a>
+  </div>
+</div>
+
+<!-- Practice areas -->
+<div class="a-panel-head" style="border-bottom:none;padding:6px 2px 12px">
+  <h2>Practice areas</h2>
+  <span class="hint">Four domains &middot; {{ "{:,}".format(total_questions) }} questions</span>
+</div>
+<div class="a-grid4" style="margin-bottom:14px">
+  {% for dom in domains %}
+  <a href="/quiz/{{ dom.slug }}" class="a-card" style="text-decoration:none;display:block;transition:box-shadow .15s, transform .15s">
+    <div class="ic-row">
+      <span class="a-chip-icon" style="background: {{ dom.color }}1A; color: {{ dom.color }}; font-weight:800">{{ dom.domain_name[:1] }}</span>
+      <span class="a-tag" style="background: {{ dom.color }}1A; color: {{ dom.color }}">{{ dom.readiness_pct }}%</span>
+    </div>
+    <div class="c-label" style="margin-top:12px;color:var(--a-gray-700);font-weight:600">{{ dom.domain_name }}</div>
+    {% if dom.weak_count > 0 %}
+    <div class="c-sub">{{ dom.weak_count }} weak topic{{ 's' if dom.weak_count != 1 }}</div>
+    {% else %}
+    <div class="c-sub" style="color:var(--a-green-600)">All topics strong</div>
+    {% endif %}
+    <div class="a-track"><i style="width: {{ dom.readiness_pct }}%; background: {{ dom.color }};"></i></div>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Lower row -->
+<div class="a-grid2">
+
+  <!-- Recommended topics -->
+  <div class="a-panel">
+    <div class="a-panel-head">
+      <h2>Recommended next</h2>
+      <a href="/stats" class="link">Full report →</a>
+    </div>
+    {% if recommendations %}
+    {% for rec in recommendations %}
+    <div class="a-row">
+      <span class="r-name" style="width:auto;flex:1"><span class="dot" style="background: {% if rec.level == 'Strong' %}var(--a-green-500){% elif rec.level == 'Fair' %}var(--a-navy-500){% else %}var(--a-gold-500){% endif %};"></span>{{ rec.topic }}</span>
+      <span style="text-align:right;flex-shrink:0">
+        <span class="a-tag" style="background: {% if rec.level == 'Strong' %}#D1FAE5;color:var(--a-green-600){% elif rec.level == 'Fair' %}var(--a-navy-50);color:var(--a-navy-600){% else %}#FEF3C7;color:var(--a-gold-600){% endif %}">{{ rec.level }}</span>
+        <div class="c-sub" style="margin-top:2px">{{ rec.domain }}</div>
+      </span>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div style="padding:18px;color:var(--a-gray-500);font-size:13.5px">Answer more questions and we'll point you at exactly what to review next.</div>
+    {% endif %}
+  </div>
+
+  <!-- Recent sessions -->
+  <div class="a-panel">
+    <div class="a-panel-head">
+      <h2>Recent sessions</h2>
+      <a href="/stats" class="link">All sessions →</a>
+    </div>
+    {% if recent_sessions %}
+    <table class="a-table">
+      <thead>
+        <tr><th>Area</th><th>Date</th><th style="text-align:right">Score</th></tr>
+      </thead>
+      <tbody>
+        {% for s in recent_sessions %}
+        <tr>
+          <td>{{ s.domain_name }}</td>
+          <td style="color:var(--a-gray-400)">{{ s.date }}</td>
+          <td style="text-align:right" class="num">
+            <span class="verdict-a {% if s.score >= 80 %}ok{% elif s.score >= 60 %}warn{% else %}fail{% endif %}">{{ s.score }}%</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="padding:18px;color:var(--a-gray-500);font-size:13.5px">No sessions yet — your results will land here.</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="a-foot"><span>Tupelo</span><span>TEAS &amp; HESI A2 prep · Mu2 Solutions</span></div>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Results — {{ domain_name }}{% endblock %}
+
+{% block content %}
+
+<!-- Score Summary -->
+<div class="results-summary" id="results-summary">
+  <div class="results-score">{{ pct }}%</div>
+  <div class="results-score-label">{{ domain_name }}</div>
+
+  <div class="results-detail-row">
+    <div class="results-detail">
+      <div class="results-detail-value text-correct">{{ score }}</div>
+      <div class="results-detail-label">Correct</div>
+    </div>
+    <div class="results-detail">
+      <div class="results-detail-value text-wrong">{{ total - score }}</div>
+      <div class="results-detail-label">Wrong</div>
+    </div>
+    <div class="results-detail">
+      <div class="results-detail-value">{{ elapsed_time }}</div>
+      <div class="results-detail-label">Time</div>
+    </div>
+    <div class="results-detail">
+      <div class="results-detail-value">{{ best_streak }}</div>
+      <div class="results-detail-label">Best Streak</div>
+    </div>
+  </div>
+</div>
+
+<!-- Topic Breakdown -->
+{% if topic_breakdown %}
+<div style="margin-bottom: 24px;">
+  <h2 class="section-title">By Topic</h2>
+
+  {% for t in topic_breakdown %}
+  <div class="mistake-card" style="display: flex; justify-content: space-between; align-items: center;">
+    <span style="font-weight: 500; font-size: 0.88rem;">{{ t.topic }}</span>
+    <span style="font-family: var(--font-heading); font-weight: 700; color: {% if t.correct == t.total %}var(--correct){% elif t.correct / t.total >= 0.7 %}var(--warning){% else %}var(--wrong){% endif %};">
+      {{ t.correct }}/{{ t.total }}
+    </span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Mistakes -->
+{% if mistakes %}
+<div style="margin-bottom: 24px;">
+  <h2 class="section-title">Review Mistakes</h2>
+
+  {% for m in mistakes %}
+  <div class="mistake-card">
+    <div class="mistake-question">{{ m.question }}</div>
+    <div class="mistake-answers">
+      Your answer: <strong class="text-wrong">{{ m.user_answer }}</strong><br>
+      Correct: <strong class="text-correct">{{ m.correct_answer|safe }}</strong>
+    </div>
+    {% if m.explanation %}
+    <div class="mistake-explanation">{{ m.explanation|safe }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Actions -->
+<div style="padding: 12px 0;">
+  <a href="/quiz/{{ domain_slug }}" class="submit-btn" style="display:block; text-align:center; text-decoration:none; margin-bottom:10px;">Try Again</a>
+  <a href="/quiz/mixed" class="btn btn-secondary btn-full" style="display:block; text-align:center; text-decoration:none; margin-bottom:10px;">Mixed Review</a>
+  <a href="/" class="btn btn-secondary btn-full" style="display:block; text-align:center; text-decoration:none;">Back to Dashboard</a>
+</div>
+
+{% endblock %}
+
+{% block bottom_nav %}{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var pct = {{ pct }};
+  var el = document.getElementById("results-summary");
+  if (pct === 100) el.classList.add("celebrate-perfect");
+  else if (pct >= 80) el.classList.add("celebrate-good");
+});
+</script>
+{% endblock %}

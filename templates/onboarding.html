@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome — Tupelo Nursing Exam Prep{% endblock %}
+{% block bottom_nav %}{% endblock %}
+
+{% block head %}
+<style>
+  .onboard-path { text-align: left; margin: 18px 0 22px; padding: 16px 18px; background: var(--a-navy-50); border: 1px solid var(--a-navy-100); border-radius: var(--a-radius); }
+  .onboard-path h2 { font-size: 0.95rem; font-weight: 700; color: var(--a-navy-700); margin-bottom: 10px; }
+  .onboard-path ol { margin: 0; padding-left: 18px; }
+  .onboard-path li { font-size: 0.86rem; color: var(--a-gray-600); line-height: 1.5; margin-bottom: 7px; }
+  .onboard-path li strong { color: var(--a-navy-700); }
+  .exam-options { display: flex; flex-direction: column; gap: 10px; }
+  .exam-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--a-navy-100); border-radius: var(--a-radius); cursor: pointer; transition: border-color .15s, background .15s; }
+  .exam-option:hover { border-color: var(--a-navy-500); }
+  .exam-option input { margin-top: 3px; accent-color: var(--navy); }
+  .exam-option .exam-name { font-weight: 700; color: var(--a-navy-700); }
+  .exam-option .exam-desc { font-size: 0.8rem; color: var(--a-gray-600); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1>Let's Get Started</h1>
+  <p class="subtitle">Here's how Tupelo works — then a couple of quick questions to personalize your plan.</p>
+
+  <div class="onboard-path">
+    <h2>Your path to passing</h2>
+    <ol>
+      <li><strong>Diagnose</strong> — a 20-question assessment finds your starting point.</li>
+      <li><strong>Practice</strong> — your Coach points you at what to drill, most-missed first.</li>
+      <li><strong>Review</strong> — go over what you missed so it sticks.</li>
+      <li><strong>Re-check</strong> — watch your readiness climb toward test day.</li>
+    </ol>
+  </div>
+
+  <form method="POST" action="/onboarding">
+    <div class="form-group">
+      <label for="display_name">What should we call you?</label>
+      <input type="text" id="display_name" name="display_name"
+             placeholder="Your first name"
+             value="{{ user.display_name if user and user.display_name != 'Student' else '' }}">
+    </div>
+    <div class="form-group">
+      <label>Which exam are you preparing for?</label>
+      <div class="exam-options">
+        <label class="exam-option">
+          <input type="radio" name="exam_type" value="teas" {% if not user or not user.exam_type or user.exam_type == 'teas' %}checked{% endif %}>
+          <span><span class="exam-name">TEAS</span><br><span class="exam-desc">ATI Test of Essential Academic Skills</span></span>
+        </label>
+        <label class="exam-option">
+          <input type="radio" name="exam_type" value="hesi" {% if user and user.exam_type == 'hesi' %}checked{% endif %}>
+          <span><span class="exam-name">HESI A2</span><br><span class="exam-desc">Elsevier Health Education Systems exam</span></span>
+        </label>
+        <label class="exam-option">
+          <input type="radio" name="exam_type" value="both" {% if user and user.exam_type == 'both' %}checked{% endif %}>
+          <span><span class="exam-name">Both</span><br><span class="exam-desc">Preparing for TEAS and HESI</span></span>
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="exam_date">When is your exam?</label>
+      <input type="date" id="exam_date" name="exam_date"
+             value="{{ user.exam_date if user and user.exam_date else '' }}">
+    </div>
+    <div class="form-group">
+      <label for="target_score">Target score: <strong id="target-display">{{ user.target_score if user else 80 }}</strong>%</label>
+      <input type="range" id="target_score" name="target_score"
+             min="0" max="100" value="{{ user.target_score if user else 80 }}"
+             style="width: 100%; accent-color: var(--navy);"
+             oninput="document.getElementById('target-display').textContent = this.value">
+    </div>
+    <button type="submit" class="submit-btn" style="margin-top: 8px;">Get Started</button>
+  </form>
+
+  <p class="auth-link"><a href="/onboarding/skip">Skip for now</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{# ===================================================================
+   analytics.html — Readiness analytics (14-day trend + weak areas).
+
+   Included at the bottom of stats.html. Expects context:
+     trend   [{day: "MM/DD", pct: int|null}] last 14 days, null=no data
+     weak    [{name, area, pct, url}] weak areas w/ drill-down links
+     weak_note str|None  (optional explanation line)
+   Tupelo is OER full stop: this analytics is free and always on — there
+   is no locked teaser and nothing to unlock.
+   Self-contained <style> — renders identically regardless of app CSS.
+   =================================================================== #}
+<style>
+  .pa-section { margin-top: 2rem; }
+  .pa-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .pa-title { font-size: 1.05rem; font-weight: 700; margin: 0; }
+  .pa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 720px) { .pa-grid { grid-template-columns: 1fr; } }
+  .pa-card { border: 1px solid #e3e6ee; border-radius: 14px; background: #fff; padding: 1.2rem 1.3rem; }
+  .pa-card h4 { margin: 0 0 .9rem; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: #8a93a6; }
+  .pa-trend { display: flex; align-items: flex-end; gap: 5px; height: 120px; padding-top: 6px; }
+  .pa-trend-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+  .pa-trend-bar { width: 100%; max-width: 26px; border-radius: 5px 5px 2px 2px; background: #16324f; min-height: 3px; }
+  .pa-trend-bar.ok { background: #d69e2e; }
+  .pa-trend-bar.good { background: #2d8a4e; }
+  .pa-trend-bar.low { background: #c0553b; }
+  .pa-trend-bar.nodata { background: #dfe4ec; }
+  .pa-trend-label { font-size: .62rem; color: #8a93a6; margin-top: 4px; white-space: nowrap; }
+  .pa-trend-val { font-size: .66rem; font-weight: 700; color: #445; margin-bottom: 3px; }
+  .pa-empty { color: #8a93a6; font-size: .88rem; padding: .6rem 0; }
+  .pa-weak-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .5rem 0; border-bottom: 1px solid #f0f2f6; }
+  .pa-weak-row:last-child { border-bottom: none; }
+  .pa-weak-name { font-weight: 600; font-size: .9rem; }
+  .pa-weak-area { font-size: .78rem; color: #8a93a6; }
+  .pa-weak-right { display: flex; align-items: center; gap: .8rem; }
+  .pa-weak-pct { font-weight: 700; font-size: .9rem; color: #c0553b; }
+  .pa-weak-link { font-size: .8rem; font-weight: 600; color: #16324f; text-decoration: none; white-space: nowrap; }
+  .pa-weak-link:hover { text-decoration: underline; }
+  .pa-note { font-size: .8rem; color: #8a93a6; margin-top: .7rem; }
+</style>
+
+<div class="pa-section">
+  <div class="pa-head">
+    <h3 class="pa-title">Your analytics</h3>
+  </div>
+  <div class="pa-grid" style="margin-top: .9rem;">
+
+    <div class="pa-card">
+      <h4>14-day readiness trend</h4>
+      {% if trend and trend|selectattr('pct','ne',None)|list|length > 0 %}
+      <div class="pa-trend">
+        {% for t in trend %}
+        <div class="pa-trend-col" title="{{ t.day }}: {{ t.pct if t.pct is not none else 'no session' }}%">
+          {% if t.pct is not none %}
+          <span class="pa-trend-val">{{ t.pct }}</span>
+          <div class="pa-trend-bar {% if t.pct >= 80 %}good{% elif t.pct >= 60 %}ok{% else %}low{% endif %}"
+               style="height: {{ [t.pct, 4]|max }}%;"></div>
+          {% else %}
+          <div class="pa-trend-bar nodata" style="height: 4%;"></div>
+          {% endif %}
+          <span class="pa-trend-label">{{ t.day }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="pa-note">Daily average score on finished quizzes. Blank days = no session.</p>
+      {% else %}
+      <div class="pa-empty">Answer a few quizzes and your 14-day trend will show here.</div>
+      {% endif %}
+    </div>
+
+    <div class="pa-card">
+      <h4>Weak areas to target</h4>
+      {% if weak %}
+      {% for w in weak %}
+      <div class="pa-weak-row">
+        <div>
+          <div class="pa-weak-name">{{ w.name }}</div>
+          {% if w.area %}<div class="pa-weak-area">{{ w.area }}</div>{% endif %}
+        </div>
+        <div class="pa-weak-right">
+          <span class="pa-weak-pct">{{ w.pct }}%</span>
+          <a class="pa-weak-link" href="{{ w.url }}">Practice →</a>
+        </div>
+      </div>
+      {% endfor %}
+      {% if weak_note %}<p class="pa-note">{{ weak_note }}</p>{% endif %}
+      {% else %}
+      <div class="pa-empty">No weak areas under 70% — nice work. Keep the streak alive!</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>

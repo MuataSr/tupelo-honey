@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Stimulus Q{{ q_index + 1 }}/{{ total }} — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="max-width: 720px; margin: 1rem auto;">
+
+    <!-- Progress -->
+    <div style="margin-bottom: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+        <span style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 500;">
+          Passage {{ q_index + 1 }} of {{ total }}
+        </span>
+        <span style="font-size: 0.82rem; color: var(--text-secondary);">
+          {{ ((q_index / total) * 100)|int }}%
+        </span>
+      </div>
+      <div style="background: var(--border); border-radius: 4px; height: 5px; overflow: hidden;">
+        <div style="background: var(--navy); height: 100%; width: {{ ((q_index / total) * 100)|int }}%; transition: width 0.3s; border-radius: 4px;"></div>
+      </div>
+    </div>
+
+    <!-- Step Indicator -->
+    <div style="display: flex; gap: 0; margin-bottom: 1.25rem; background: var(--surface); border-radius: 6px; overflow: hidden;">
+      {% set step_labels = ["1. Read", "2. Annotate", "3. Answer"] %}
+      {% set step_keys = ["read", "annotate", "answer"] %}
+      {% for s_label in step_labels %}
+        {% set is_active = loop.index0 <= step_keys.index(step) %}
+        <div style="flex: 1; text-align: center; padding: 0.55rem 0.5rem; font-size: 0.78rem; font-weight: 600;
+             {% if is_active %}background: var(--navy); color: white;{% else %}color: var(--text-secondary);{% endif %}">
+          {{ s_label }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- STEP 1: Read the Passage -->
+    {% if step == "read" %}
+    <div style="margin-bottom: 1.25rem;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--navy); font-weight: 600; margin-bottom: 0.5rem;">
+        Step 1 — Read the Passage
+      </div>
+      <div style="background: var(--surface); border-left: 3px solid var(--navy); padding: 1.25rem; border-radius: 0 8px 8px 0; font-size: 0.95rem; line-height: 1.7; color: var(--text);">
+        {{ question.stimulus }}
+      </div>
+    </div>
+
+    <div style="background: #f5f3ee; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+      <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">📖 While reading, ask yourself:</p>
+      <ul style="font-size: 0.83rem; color: var(--text-secondary); padding-left: 1.2rem; margin: 0;">
+        <li>What type of document is this? (speech, court ruling, declaration, essay)</li>
+        <li>Who wrote it and when?</li>
+        <li>What is the main argument or claim?</li>
+        <li>What evidence or reasoning supports it?</li>
+      </ul>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="next_step" value="annotate">
+      <input type="hidden" name="annotation" value="{{ annotation }}">
+      <input type="hidden" name="guess" value="{{ guess }}">
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
+        I've read it — Move to Annotate →
+      </button>
+    </form>
+
+    <!-- STEP 2: Annotate -->
+    {% elif step == "annotate" %}
+    <div style="margin-bottom: 1rem;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--navy); font-weight: 600; margin-bottom: 0.5rem;">
+        Step 2 — Annotate Key Points
+      </div>
+      <div style="background: var(--surface); border-left: 3px solid var(--border); padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; font-size: 0.88rem; line-height: 1.65; color: var(--text-secondary); max-height: 200px; overflow-y: auto;">
+        {{ question.stimulus }}
+      </div>
+    </div>
+
+    <div style="margin-bottom: 1rem;">
+      <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">
+        ✏️ Write down the key points, claims, and TEAS/HESI concepts you notice:
+      </label>
+      <textarea name="annotation" rows="4" placeholder="Example: This is a Federalist Paper arguing for separation of powers. Key claim: checks and balances prevent tyranny..."
+                style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: var(--font-body); font-size: 0.9rem; resize: vertical; line-height: 1.5;">{{ annotation }}</textarea>
+    </div>
+
+    <div style="background: #f5f3ee; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem;">
+      <p style="font-size: 0.83rem; color: var(--text-secondary); margin: 0;">
+        💡 <strong>Tip:</strong> Don't overthink it. Just write what stands out. The act of writing forces you to process the passage more deeply than reading alone.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <form method="POST" style="flex: 1;">
+        <input type="hidden" name="next_step" value="read">
+        <input type="hidden" name="annotation" value="{{ annotation }}">
+        <input type="hidden" name="guess" value="{{ guess }}">
+        <button type="submit" class="btn btn-secondary" style="width: 100%; padding: 0.8rem;">
+          ← Re-read
+        </button>
+      </form>
+      <form method="POST" style="flex: 2;">
+        <input type="hidden" name="next_step" value="answer">
+        <input type="hidden" name="annotation" value="{{ annotation }}">
+        <input type="hidden" name="guess" value="{{ guess }}">
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
+          Move to Question →
+        </button>
+      </form>
+    </div>
+
+    <!-- STEP 3: Answer -->
+    {% elif step == "answer" %}
+    <!-- Show annotation if they wrote one -->
+    {% if annotation %}
+    <div style="background: #f5f3ee; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.83rem;">
+      <span style="font-weight: 600; color: var(--navy);">Your notes:</span>
+      <span style="color: var(--text-secondary);">{{ annotation[:200] }}{% if annotation|length > 200 %}...{% endif %}</span>
+    </div>
+    {% endif %}
+
+    <!-- Collapsed passage reference -->
+    <details style="margin-bottom: 1.25rem; background: var(--surface); border-radius: 6px; padding: 0.75rem 1rem;">
+      <summary style="cursor: pointer; font-size: 0.82rem; color: var(--navy); font-weight: 600;">
+        📖 Re-read the passage
+      </summary>
+      <div style="margin-top: 0.75rem; font-size: 0.88rem; line-height: 1.65; color: var(--text-secondary);">
+        {{ question.stimulus }}
+      </div>
+    </details>
+
+    <!-- Prediction prompt -->
+    <div style="background: linear-gradient(135deg, rgba(27,58,92,0.06) 0%, rgba(27,58,92,0.12) 100%); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; border: 1px solid rgba(27,58,92,0.15);">
+      <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">🧠 Before reading the options — what do you think the answer is?</p>
+      <input type="text" name="guess" value="{{ guess }}" placeholder="Type your prediction (optional but powerful)..."
+             style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-family: var(--font-body); font-size: 0.88rem;">
+      <p style="font-size: 0.78rem; color: var(--text-secondary); margin: 0.4rem 0 0;">
+        Students who predict before choosing score 15-20% higher on stimulus questions.
+      </p>
+    </div>
+
+    <!-- Question -->
+    <div style="margin-bottom: 1.25rem;">
+      <p style="font-size: 1.05rem; font-weight: 600; line-height: 1.6;">
+        {{ question.question }}
+      </p>
+    </div>
+
+    <!-- Options -->
+    <form method="POST">
+      <input type="hidden" name="next_step" value="results">
+      <input type="hidden" name="annotation" value="{{ annotation }}">
+      <input type="hidden" name="guess" value="{{ guess }}">
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+        {% for option in options %}
+        <label style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.8rem 1rem; background: var(--surface); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s;"
+               onmouseover="this.style.borderColor='var(--navy)'"
+               onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='var(--border)'">
+          <input type="radio" name="selected" value="{{ option }}" style="margin-top: 0.15rem; accent-color: var(--navy);">
+          <span style="font-size: 0.92rem; line-height: 1.5;">{{ option }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
+        Submit Answer →
+      </button>
+    </form>
+
+    <form method="POST" style="margin-top: 0.75rem;">
+      <input type="hidden" name="next_step" value="annotate">
+      <input type="hidden" name="annotation" value="{{ annotation }}">
+      <input type="hidden" name="guess" value="{{ guess }}">
+      <button type="submit" style="background: none; border: none; color: var(--text-secondary); font-size: 0.85rem; cursor: pointer; padding: 0.5rem 0; font-family: var(--font-body);">
+        ← Back to Annotate
+      </button>
+    </form>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

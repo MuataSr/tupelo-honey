@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Stimulus Practice Results — Tupelo Nursing Exam Prep{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="max-width: 640px; margin: 1.5rem auto;">
+
+    <!-- Score -->
+    <div class="results-summary">
+      <div class="results-score">{{ pct }}%</div>
+      <div class="results-score-label">{{ correct }} of {{ total }} correct</div>
+      <div class="results-detail-row">
+        <div>
+          <div class="results-detail-value">{{ annotated }}</div>
+          <div class="results-detail-label">Annotated</div>
+        </div>
+        <div>
+          <div class="results-detail-value">{{ guessed_correct }}</div>
+          <div class="results-detail-label">Guessed Correct</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Literacy Insight -->
+    {% if annotated == total %}
+    <div style="background: #eef6ee; border: 1px solid #c5e0c5; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; text-align: center;">
+      <p style="font-size: 0.9rem; font-weight: 600; color: var(--correct); margin: 0;">
+        🎯 Great annotation habit! You annotated every passage.
+      </p>
+    </div>
+    {% elif annotated < total // 2 %}
+    <div style="background: #fff8e8; border: 1px solid #e8d5a0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; text-align: center;">
+      <p style="font-size: 0.9rem; font-weight: 600; color: #6b5a00; margin: 0;">
+        💡 Try annotating more passages. Writing notes while reading dramatically improves recall.
+      </p>
+    </div>
+    {% endif %}
+
+    {% if pct >= 80 %}
+    <div style="background: #eef6ee; border: 1px solid #c5e0c5; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; text-align: center;">
+      <p style="font-size: 0.9rem; font-weight: 600; color: var(--correct); margin: 0;">
+        ✅ Strong stimulus comprehension! You're reading passages accurately.
+      </p>
+    </div>
+    {% elif pct < 60 %}
+    <div style="background: #f9eeef; border: 1px solid #e4c8cc; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; text-align: center;">
+      <p style="font-size: 0.9rem; font-weight: 600; color: #7a1f1f; margin: 0;">
+        📖 Focus on the prediction step. Before picking an answer, form your own response first.
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Question Review -->
+    <h2 style="font-size: 1.1rem; margin-bottom: 0.75rem;">Question Review</h2>
+
+    {% for a in answers %}
+    <div class="mistake-card{% if a.is_correct %}" style="border-left: 3px solid var(--correct);{% else %}" style="border-left: 3px solid var(--wrong);{% endif %}">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
+        <span class="mistake-question">Q{{ loop.index }}: {{ a.question_text[:120] }}{% if a.question_text|length > 120 %}...{% endif %}</span>
+        <span style="font-weight: 700; font-size: 0.85rem; color: {% if a.is_correct %}var(--correct){% else %}var(--wrong){% endif %}; flex-shrink: 0; margin-left: 0.5rem;">
+          {% if a.is_correct %}✓{% else %}✗{% endif %}
+        </span>
+      </div>
+
+      <!-- Stimulus reference -->
+      <details style="margin-bottom: 0.5rem;">
+        <summary style="cursor: pointer; font-size: 0.78rem; color: var(--text-secondary); font-weight: 500;">
+          View passage
+        </summary>
+        <div style="margin-top: 0.4rem; font-size: 0.82rem; line-height: 1.55; color: var(--text-secondary); padding: 0.5rem; background: var(--surface); border-radius: 4px;">
+          {{ a.stimulus[:400] }}{% if a.stimulus|length > 400 %}...{% endif %}
+        </div>
+      </details>
+
+      <div class="mistake-answers">
+        {% if a.is_correct %}
+        <div>You answered: <strong>{{ a.selected }}</strong></div>
+        {% else %}
+        <div>You answered: <strong style="color: var(--wrong);">{{ a.selected }}</strong></div>
+        <div>Correct: <strong style="color: var(--correct);">{{ a.correct }}</strong></div>
+        {% endif %}
+      </div>
+
+      {% if a.annotation %}
+      <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px solid var(--border);">
+        <strong>Your notes:</strong> {{ a.annotation[:150] }}{% if a.annotation|length > 150 %}...{% endif %}
+      </div>
+      {% endif %}
+
+      {% if a.guess %}
+      <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">
+        <strong>Prediction:</strong> {{ a.guess[:150] }}{% if a.guess|length > 150 %}...{% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+      <a href="/stimulus" class="btn btn-secondary" style="flex: 1; text-align: center; padding: 0.8rem; font-weight: 600;">← Hub</a>
+      <a href="/stimulus/practice" class="btn btn-primary" style="flex: 1; text-align: center; padding: 0.8rem; font-weight: 600;">Practice Again →</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
