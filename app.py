@@ -39,7 +39,7 @@ app.secret_key = os.environ.get("FLASK_SECRET", os.urandom(24).hex())
 # ---------------------------------------------------------------------------
 # Editions
 #
-# Sabal is OER full stop: ONE free app, no paid tier, no PRO, no upselling.
+# Tupelo is OER full stop: ONE free app, no paid tier, no PRO, no upselling.
 # There is no edition flag and no hidden paid surface. The AI tutor is an
 # optional "bring your own model" capability (see tutor_engine.py) — it is
 # neither gated nor sold. Removing the paid tier here by ABSENCE (no routes,
@@ -138,7 +138,7 @@ def _tutor_connected():
 def inject_globals():
     """Expose the current user and shell state to all templates.
 
-    Sabal is OER full stop: there is no plan, no premium state, and no
+    Tupelo is OER full stop: there is no plan, no premium state, and no
     question cap — every student gets everything, always, for free.
     """
     user = _get_current_user()
@@ -1140,12 +1140,12 @@ def admin_waitlist():
             "%s,%s,%s\n" % (r["email"], r["source"] or "", r["created_at"]) for r in rows)
         return out, 200, {
             "Content-Type": "text/csv; charset=utf-8",
-            "Content-Disposition": "attachment; filename=sabal-pilot-waitlist.csv",
+            "Content-Disposition": "attachment; filename=tupelo-pilot-waitlist.csv",
         }
     lines = "\n".join("%s  (%s)" % (r["email"], (r["created_at"] or "")[:19]) for r in rows) or "(empty)"
     html = (
         "<!doctype html><meta name=viewport content='width=device-width,initial-scale=1'>"
-        "<h2>Sabal pilot waitlist &mdash; %d</h2>"
+        "<h2>Tupelo Honey pilot waitlist &mdash; %d</h2>"
         "<p>Seats used: %d of %d</p><pre>%s</pre>"
         "<p><a href='?key=%s&amp;format=csv'>Download CSV</a></p>"
     ) % (len(rows), _pilot_seats_used(), _pilot_cap(), lines, key)
@@ -1171,14 +1171,14 @@ def _try_email_dashboard_link(user, link):
             return False
         body = (
             f"Hi {(user or {}).get('display_name') or 'Student'},\n\n"
-            f"Your Sabal dashboard link:\n\n{link}\n\n"
+            f"Your Tupelo Honey dashboard link:\n\n{link}\n\n"
             f"Open it and you'll land straight on your dashboard. Keep it safe — "
             f"it's how you log in.\n\n— Tupelo Nursing Exam Prep (Mu2 Solutions)"
         )
         payload = {
             "from": sender,
             "to": [recipient],
-            "subject": "Your Sabal dashboard link",
+            "subject": "Your Tupelo Honey dashboard link",
             "text": body,
         }
         req = urllib.request.Request(
