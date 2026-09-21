@@ -1,4 +1,4 @@
-"""Sabal is OER full stop: one free app, no paid tier, no upselling.
+"""Tupelo is OER full stop: one free app, no paid tier, no upselling.
 
 These lock that guarantee. If someone later re-opens a paid surface — a pricing
 route, a premium state, an upgrade prompt, an edition flag, or a question cap —
