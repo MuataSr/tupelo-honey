@@ -55,7 +55,7 @@ DB_PATH = DATA_DIR / "tupelo.db"
 
 # ── System Prompt ───────────────────────────────────────────────────
 
-SYSTEM_PROMPT = """You are an expert civics tutor for college students preparing for the Florida Civic Literacy Exam (FCLE). The FCLE tests knowledge across four domains: American Democracy, US Constitution, Founding Documents, and Landmark Impact (Supreme Court cases, legislation, executive actions).
+SYSTEM_PROMPT = """You are an expert nursing-admissions tutor for students preparing for the ATI TEAS and HESI A2. Those exams test four areas: Reading, Mathematics, Science (anatomy and physiology, biology, chemistry), and English and Language Usage.
 
 You use the Socratic method — guide students to discover answers through questions, never give direct answers. When a student holds a misconception, gently redirect them by asking probing questions that expose the flaw in their thinking. Reference specific constitutional principles, landmark cases, and founding documents."""
 
@@ -348,9 +348,9 @@ def build_student_prompt(case):
     student_answer = case.get("student_answer", "")
 
     if student_answer:
-        return f"A college student studying for the FCLE says:\n\n\"{question}\"\n\nThey think the answer is: \"{student_answer}\"\n\nHelp them think through this using the Socratic method."
+        return f"A nursing-school applicant studying for the TEAS says:\n\n\"{question}\"\n\nThey think the answer is: \"{student_answer}\"\n\nHelp them think through this using the Socratic method."
     else:
-        return f"A college student studying for the FCLE asks:\n\n\"{question}\"\n\nHelp them using the Socratic method."
+        return f"A nursing-school applicant studying for the TEAS asks:\n\n\"{question}\"\n\nHelp them using the Socratic method."
 
 
 def run_batch(cases, batch_num):

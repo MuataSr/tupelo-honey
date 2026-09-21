@@ -1,7 +1,7 @@
 """
 app.py — Tupelo Nursing Exam Prep Flask application.
 
-Civic literacy practice for the Florida Civic Literacy Exam.
+Nursing exam practice for the ATI TEAS and HESI A2.
 Four domains: American Democracy, US Constitution, Founding Documents, Landmark Impact.
 All data from kb.py (question bank) and db.py (user progress).
 """
@@ -1637,7 +1637,7 @@ def stimulus_practice_results(quiz_id):
 #
 # This is NOT a paid feature and NOT gated. It is plumbing: point the router
 # and teacher at any OpenAI-compatible endpoint (a local llama-server or a
-# cloud model) via the FCLE_TUTOR_ROUTER_URL / FCLE_TUTOR_TEACHER_URL env
+# cloud model) via the TUPELO_TUTOR_ROUTER_URL / TUPELO_TUTOR_TEACHER_URL env
 # vars, or leave them unset and the tutor simply reports its models offline.
 # ---------------------------------------------------------------------------
 

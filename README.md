@@ -66,10 +66,8 @@ There is also an optional AI tutor in the code — a Socratic tutor grounded in 
 app's own knowledge base. It is **not** a paid feature and **not** gated. It is
 plumbing: point it at any OpenAI-compatible endpoint (a local
 [llama-server](https://github.com/ggml-org/llama.cpp) or a cloud model) via the
-`FCLE_TUTOR_ROUTER_URL` / `FCLE_TUTOR_TEACHER_URL` environment variables, and it
-works. Leave them unset and the tutor simply reports its models offline. (Those
-variable names are inherited from the shared exam-prep framework this app is
-built on — see `CONTRIBUTING.md`.)
+`TUPELO_TUTOR_ROUTER_URL` / `TUPELO_TUTOR_TEACHER_URL` environment variables,
+and it works. Leave them unset and the tutor simply reports its models offline.
 
 ---
 

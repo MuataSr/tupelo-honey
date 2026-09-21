@@ -1,5 +1,5 @@
 #!/bin/bash
-# FCLE Tutor — Dual Qwen3.5-4B server launcher
+# Tupelo Tutor — Dual Qwen3.5-4B server launcher
 # Router: port 8082 (ctx 4096) — intent classification
 # Teacher: port 8083 (ctx 8192) — Socratic response generation
 # Both use --reasoning off for clean content output

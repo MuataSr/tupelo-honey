@@ -1,11 +1,11 @@
 """
-FCLE Tutor Engine — optional "bring your own model" Socratic tutor.
+Tupelo Tutor Engine — optional "bring your own model" Socratic tutor.
 
 This is NOT a paid feature and NOT gated. It is plumbing: an OpenAI-compatible
 chat endpoint powers a router (intent classification) and a teacher (Socratic
 response grounded in the app's own knowledge base). Point them at a local
-llama-server or any cloud model via the FCLE_TUTOR_ROUTER_URL and
-FCLE_TUTOR_TEACHER_URL env vars. Defaults assume a local llama-server on ports
+llama-server or any cloud model via the TUPELO_TUTOR_ROUTER_URL and
+TUPELO_TUTOR_TEACHER_URL env vars. Defaults assume a local llama-server on ports
 8082 (router) and 8083 (teacher); leave them unset and the tutor reports its
 models offline.
 """
@@ -18,31 +18,44 @@ import requests
 from pathlib import Path
 
 DB_PATH = Path(__file__).parent / "data" / "tupelo.db"
-ROUTER_URL = os.environ.get("FCLE_TUTOR_ROUTER_URL", "http://localhost:8082/v1/chat/completions")
-TEACHER_URL = os.environ.get("FCLE_TUTOR_TEACHER_URL", "http://localhost:8083/v1/chat/completions")
+
+
+def _env(*names, default):
+    """First env var that is set, so legacy framework names keep working."""
+    for n in names:
+        v = os.environ.get(n)
+        if v:
+            return v
+    return default
+
+
+ROUTER_URL = _env("TUPELO_TUTOR_ROUTER_URL", "FCLE_TUTOR_ROUTER_URL",
+                  default="http://localhost:8082/v1/chat/completions")
+TEACHER_URL = _env("TUPELO_TUTOR_TEACHER_URL", "FCLE_TUTOR_TEACHER_URL",
+                   default="http://localhost:8083/v1/chat/completions")
 
 DOMAIN_MAP = {
-    1: "American Democracy",
-    2: "US Constitution",
-    3: "Founding Documents",
-    4: "Landmark Impact",
+    1: "Reading",
+    2: "Mathematics",
+    3: "Science",
+    4: "English and Language Usage",
 }
 
 ROUTER_PROMPT = (
     'Classify the student message. Reply with ONLY a JSON object. '
-    'Domains: 1=American Democracy, 2=US Constitution, 3=Founding Documents, '
-    '4=Landmark Impact. '
-    'Format: {"intent":"concept_question","domain":1,"topics":["federalism"],"difficulty":"basic"}'
+    'Domains: 1=Reading, 2=Mathematics, 3=Science, 4=English and Language Usage. '
+    'Format: {"intent":"concept_question","domain":3,"topics":["mitosis"],"difficulty":"basic"}'
 )
 
 TEACHER_PROMPT = (
-    "You are a Socratic tutor for the Florida Civic Literacy Exam.\n\n"
+    "You are a Socratic tutor for the ATI TEAS and HESI A2 nursing admission "
+    "exams.\n\n"
     "Rules:\n"
     "1. GUIDE — ask probing questions that lead students to discover answers. Never just give the answer.\n"
     "2. GROUND — use the provided knowledge base context to keep responses accurate.\n"
     "3. CORRECT — if the student shows a misconception from KNOWN MISCONCEPTIONS, gently redirect.\n"
     "4. CONCISE — 2-4 sentences plus one follow-up question. No lectures.\n"
-    "5. SPECIFIC — reference documents, amendments, or cases by name when relevant.\n"
+    "5. SPECIFIC — reference the relevant concept, term, formula, or body system by name when it helps.\n"
     "6. ADAPT — match difficulty to the student's level.\n\n"
     "DOMAIN: {domain_name}\n\n{kb_context}"
 )
@@ -154,7 +167,7 @@ class TutorEngine:
     # ── Teacher ───────────────────────────────────────────────────
 
     def generate_response(self, message, kb_context, domain=None, history=None):
-        domain_name = DOMAIN_MAP.get(domain, "General Civics")
+        domain_name = DOMAIN_MAP.get(domain, "General")
 
         ctx_parts = []
         if kb_context["content"]:
