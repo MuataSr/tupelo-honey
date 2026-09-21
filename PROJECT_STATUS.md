@@ -106,7 +106,10 @@ Load-tested against the real app under gunicorn with the production config
 
 ## Remaining Roadmap
 
-- [ ] **Production deploy** — WSGI + systemd + TLS + domain (the Sabal pattern)
+- [x] **Production deploy (partial)**: live on the Sabal droplet at
+  `/opt/tupelo-study-app` as a systemd service, gunicorn on 127.0.0.1:5003,
+  with hard memory and CPU guards so the sibling app is never affected.
+  Outstanding: DNS A record for the Tupelo hostname, then nginx + TLS.
 - [ ] **PWA support** — service worker + manifest for install-to-homescreen
 - [ ] **Mobile polish** — verify responsive layout on small screens
 
