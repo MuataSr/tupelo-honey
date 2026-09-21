@@ -807,7 +807,6 @@
 }
 .launch-banner strong { text-transform: uppercase; letter-spacing: 0.06em; }
 
-
 /* ══════════════════════════════════════════════════════════════════
    Template A (app.css — navy/gold SaaS) — loaded SECOND so it wins the cascade.
    ══════════════════════════════════════════════════════════════════ */
@@ -921,8 +920,6 @@ body.a-shell { background: var(--a-gray-100); }
 }
 .brand-name { font-size: 15px; font-weight: 800; color: var(--a-gray-900); line-height: 1.2; }
 .brand-sub { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--a-gray-400); font-weight: 600; }
-.sabal-brand-logo { width: 168px; height: auto; display: block; }
-.sabal-auth-logo { width: 210px; height: auto; display: block; margin: 0 auto; }
 
 /* Nav */
 .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px 12px; }
@@ -1360,7 +1357,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--a-navy-500); box
 }
 .current-plan-badge { border-color: #2d6a4f33; }
 
-
 /* ---------------------------------------------------------------------------
    Study Coach  (.sc-*)
    Namespaced on purpose: app.css already claims .card, .a-panel, .stat-card,
@@ -1456,7 +1452,6 @@ input:focus, select:focus, textarea:focus { border-color: var(--a-navy-500); box
   border-top: 1px solid #EEF0F3; padding-top: 12px;
 }
 .sc-attrib a { color: #8A93A0; text-decoration: underline; }
-
 
 /* ---------------------------------------------------------------------------
    Per-answer coach note  (.coach-note-*)

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/tupelo-honey-card.png" alt="Tupelo Honey — Nursing Prep" width="720">
+</p>
+
 # Tupelo Honey — Free Nursing Exam Prep
 
 **Pass the TEAS and the HESI A2. Free, forever.**
