@@ -19,6 +19,31 @@ link — that's the whole gate.
 
 ---
 
+## Why Tupelo Honey
+
+The name is Creek: *ito*, tree, and *opilwa*, swamp. The tree that grows with its
+feet in the water. Southeastern peoples used the tupelo as medicine long before
+anyone kept bees on this continent.
+
+Tupelo honey is Florida's own. White tupelo (*Nyssa ogeche*) blooms for about two
+weeks a year along the lower Apalachicola, around Wewahitchka. It makes the one
+honey that stays clear when every other honey hardens, because its
+fructose-to-glucose ratio is the highest of any commercial honey, about 1.65:1
+(USDA dataset compiled by Jonathan W. White Jr., 1975). It does not crystallize.
+It does not spoil.
+
+That is the standard this app holds to.
+
+**What we do not claim.** The ethnobotany record documents Southeastern peoples
+using tupelo *bark* as medicine, not the honey. Honeybees are not native to the
+Americas, so pre-contact Florida had no honeybee honey at all. We name the app
+for the tree and the land, not for a medicinal claim the record does not
+support. Sources: Swanton, *Religious Beliefs and Medical Practices of the Creek
+Indians*, SI-BAE Annual Report #42 (1928); BRIT Native American Ethnobotany
+Database.
+
+---
+
 ## Why this exists
 
 I built Tupelo with AI — on purpose.
