@@ -106,10 +106,11 @@ Load-tested against the real app under gunicorn with the production config
 
 ## Remaining Roadmap
 
-- [x] **Production deploy (partial)**: live on the Sabal droplet at
-  `/opt/tupelo-study-app` as a systemd service, gunicorn on 127.0.0.1:5003,
-  with hard memory and CPU guards so the sibling app is never affected.
-  Outstanding: DNS A record for the Tupelo hostname, then nginx + TLS.
+- [x] **Production deploy: LIVE at https://tupelo.mu2.solutions** (2026-09-22).
+  systemd service on the Sabal droplet at `/opt/tupelo-study-app`, gunicorn on
+  127.0.0.1:5003 behind nginx, Let's Encrypt TLS with auto-renewal. Hard
+  resource guards (`MemoryMax=350M`, `CPUWeight=50`, `TasksMax=64`) keep the
+  sibling app unaffected; verified after every deploy step.
 - [ ] **PWA support** — service worker + manifest for install-to-homescreen
 - [ ] **Mobile polish** — verify responsive layout on small screens
 
