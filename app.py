@@ -34,7 +34,40 @@ import coach.repository as coach_repository
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", os.urandom(24).hex())
+
+# ---------------------------------------------------------------------------
+# Session signing key
+#
+# FLASK_SECRET is REQUIRED in production (see DEPLOY.md step 3 and
+# .env.example). It signs every session cookie, so it must be fixed and shared
+# by every worker: under gunicorn's `workers = 2` a per-process random value
+# means worker A rejects every cookie worker B issued, and worker recycling
+# rotates the key again mid-session.
+#
+# The failure is silent and looks like an application bug rather than a missing
+# environment variable: students are bounced to /login at random, quiz starts
+# redirect to /login?next=..., and the progress tables stay empty while the
+# service reports healthy. So production fails closed here instead of quietly
+# degrading to a key nobody else has.
+# ---------------------------------------------------------------------------
+_configured_secret = (os.environ.get("FLASK_SECRET") or "").strip()
+_flask_env = (os.environ.get("FLASK_ENV") or "").strip().lower()
+
+if _configured_secret:
+    app.secret_key = _configured_secret
+elif _flask_env in ("production", "prod"):
+    raise RuntimeError(
+        "FLASK_SECRET is not set (FLASK_ENV=%s). Refusing to start: without a "
+        "fixed session key every gunicorn worker signs cookies with its own "
+        "random key, so students are logged out at random and cannot finish a "
+        "quiz. Put FLASK_SECRET in the service EnvironmentFile "
+        "(`systemctl cat tupelo-study-app.service`); generate one with "
+        "`openssl rand -hex 24`." % _flask_env
+    )
+else:
+    # Development and tests only: a per-process key is fine when there is
+    # exactly one process.
+    app.secret_key = os.urandom(24).hex()
 
 # ---------------------------------------------------------------------------
 # Editions
