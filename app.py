@@ -2,7 +2,7 @@
 app.py — Tupelo Nursing Exam Prep Flask application.
 
 Nursing exam practice for the ATI TEAS and HESI A2.
-Four domains: American Democracy, US Constitution, Founding Documents, Landmark Impact.
+Four domains: Reading, Math, Science, English & Language Usage.
 All data from kb.py (question bank) and db.py (user progress).
 """
 
