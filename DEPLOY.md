@@ -62,7 +62,16 @@ systemctl daemon-reload && systemctl enable --now tupelo-study-app
 curl -s -o /dev/null -w 'HTTP %{http_code}\n' https://<your-domain>/
 curl -s -o /dev/null -w 'HTTP %{http_code}\n' https://<your-domain>/login
 journalctl -u tupelo-study-app -n 50 --no-pager
+
+# The session key must actually REACH the process. Expect the .env file to be
+# listed here. If it is not, every worker signs cookies with its own key and
+# students are logged out at random (see the note below).
+systemctl show -p EnvironmentFiles tupelo-study-app
 ```
+
+A deployment is not verified until one session survives more than one request.
+Sign up, then load an authenticated page ten times in a row (`/account` is the
+cheapest): ten for ten is healthy, a mix means the key is not shared.
 
 ## Code update
 
@@ -83,6 +92,13 @@ curl -s -o /dev/null -w "HTTP %{http_code}\n" https://<your-domain>/
   ships the current question bank with it.
 - Quiz state is SQLite-backed (`active_quizzes`), so `workers = 2` is safe —
   nothing lives in worker RAM.
+- **`FLASK_SECRET` is not optional, and the app fails closed without it.** With
+  `FLASK_ENV=production` and no `FLASK_SECRET`, startup raises rather than
+  inventing a key. A missing key is a total outage that presents as a UI bug:
+  each worker signs cookies with a different random key, so the student is
+  bounced to `/login` at random, quiz starts redirect to `/login?next=...`, and
+  the progress tables stay empty while the service reports healthy. If students
+  "cannot stay logged in", check `systemctl show -p EnvironmentFiles` first.
 - `gunicorn.conf.py` recycles workers every ~400 requests (`max_requests`).
   Under sustained load that can cause a brief latency outlier; raise it before
   an exam-day traffic spike. See the performance table in `PROJECT_STATUS.md`.
