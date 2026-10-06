@@ -1516,3 +1516,35 @@ input:focus, select:focus, textarea:focus { border-color: var(--a-navy-500); box
   color: #334155;
 }
 .coach-note-read strong { color: #14283F; }
+
+/* ---------------------------------------------------------------------------
+   Signup bot trap ("Leave this field blank").
+   It must stay off-screen for real users while staying in the DOM for bots.
+   This rule belongs HERE, in the shared stylesheet. It must never live inside a
+   template branch: until 2026-10-02 it sat in signup.html's {% if pilot_full %}
+   branch, so the ordinary signup form rendered the trap VISIBLY, and app.py
+   silently drops any signup whose website field is filled. A student who typed
+   in the box they could see was redirected to "/" with no account and no
+   message. tests/test_honeypot.py locks this down.
+   --------------------------------------------------------------------------- */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  top: auto !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Pilot-full notice, also formerly inline in signup.html. */
+.pilot-note {
+  background: rgba(15, 33, 54, 0.05);
+  border: 1px solid rgba(15, 33, 54, 0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
