@@ -1,7 +1,8 @@
 # Tupelo Honey — Project Status
 
-**Last Updated:** 2026-09-21 by Ann-E
-**Current Phase:** **Content complete, pre-deploy** — running locally; production host not yet chosen
+**Last Updated:** 2026-10-15 by Ann-E
+**Current Phase:** **LIVE at https://tupelo.mu2.solutions** (since 2026-09-22), co-hosted with
+Sabal; OER compliance pass under way (fonts and licence statement done 2026-10-15, awaiting deploy)
 **Sibling project:** [Sabal](https://github.com/MuataSr/sabal) (FCLE) — same exam-prep
 framework, different content, separate deployment.
 
@@ -43,6 +44,33 @@ duplicates, zero letter references in explanations.
 - Auth resolution order: session → `?token=` query param → `access_token`
   cookie. Stale or anonymous session ids are dropped, never honored.
 - WAL journal mode (concurrent readers, one writer).
+
+---
+
+## OER compliance (audited 2026-10-15)
+
+Checked against the OER Commons criteria the way Sabal was:
+
+| Criterion | State |
+|---|---|
+| Open licence on content | CC BY-NC-SA 4.0 (`LICENSE-CONTENT`) |
+| Open licence on code | Apache-2.0 (`LICENSE`) |
+| Licence stated on the site | **added 2026-10-15** to the landing footer, both licences with links |
+| No third party in the render path | **fixed 2026-10-15**: fonts were coming from `fonts.googleapis.com` / `fonts.gstatic.com` in `base.html` and `landing.html`; now self-hosted (commit `f364688`) |
+| Free access, no paywall | yes, no plan or premium state |
+| Repo public | yes, `MuataSr/tupelo-honey` |
+
+**Fonts (commit `f364688`):** the same two families Sabal self-hosts (Libre Baskerville and
+Source Sans 3, both SIL OFL 1.1), the same six subset woff2 files copied unchanged, served from
+`static/fonts/` with declarations in `static/css/fonts.css`. Recorded in `ATTRIBUTION.md`.
+`tests/test_self_hosted_fonts.py` (16 tests) fails if a third-party font service returns, if a
+declared file goes missing, or if the licence stops being stated on the landing page.
+169 passed before, **185 passed, 1 skipped** after.
+
+**Still open:**
+- [ ] **Deploy `f364688`** to `/opt/tupelo-study-app` (live host, awaiting Mister K's word).
+- [ ] **Crawl surfaces** — no `robots.txt`, no `sitemap.xml`, no canonical, no OG tags, no
+  Search Console tag. Sabal has all of these; Tupelo has none.
 
 ---
 
