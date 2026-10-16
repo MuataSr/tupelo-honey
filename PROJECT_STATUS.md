@@ -68,7 +68,8 @@ declared file goes missing, or if the licence stops being stated on the landing 
 169 passed before, **185 passed, 1 skipped** after.
 
 **Still open:**
-- [ ] **Deploy `f364688`** to `/opt/tupelo-study-app` (live host, awaiting Mister K's word).
+- [x] **Deployed 2026-10-16** (`fa5c832`) to `/opt/tupelo-study-app`; service restarted, backup and
+  rollback point recorded at `/root/backups/tupelo-fonts-20261016-152109`.
 - [ ] **Crawl surfaces** — no `robots.txt`, no `sitemap.xml`, no canonical, no OG tags, no
   Search Console tag. Sabal has all of these; Tupelo has none.
 
