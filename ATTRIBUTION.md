@@ -1,25 +1,25 @@
 # Licensing and attribution
 
-This repository uses a **split licence**: the software and the educational content are
+This repository uses a **split license**: the software and the educational content are
 licensed differently on purpose.
 
-| What | Licence | File |
+| What | License | File |
 |---|---|---|
 | **Source code** — the Flask app, templates, scripts, tooling | **Apache License 2.0** | [`LICENSE`](LICENSE) |
 | **Educational content** — question bank, explanations, lessons, misconception library, key-term glossary | **CC BY-NC-SA 4.0** | [`LICENSE-CONTENT`](LICENSE-CONTENT) |
-| **Third-party material** | per its own licence | this file, below |
+| **Third-party material** | per its own license | this file, below |
 
 ## Why the split
 
 The code carries no competitive value — permissive licensing maximises adoption, which is
-the point of releasing it. The content is the asset, and a NonCommercial + ShareAlike licence
+the point of releasing it. The content is the asset, and a NonCommercial + ShareAlike license
 is what stops someone from taking the question bank behind a closed paywall. It is also the
 same posture OpenStax itself now uses, so there is no inconsistency between what we ship and
 what we build on — and, as it happens, it is the *only* posture available to us, because the
 source material this bank was built from is itself NonCommercial (see below).
 
 Under **CC BY-NC-SA 4.0** you may use, adapt and redistribute the content freely for
-non-commercial purposes, as long as you attribute it, keep it under the same licence, and
+non-commercial purposes, as long as you attribute it, keep it under the same license, and
 indicate any changes. Commercial use requires written permission from Mu2 Solutions, LLC.
 
 > **Note for anyone planning to commercialise a derivative:** because the source textbooks are
@@ -74,7 +74,7 @@ by Rice University. The required attribution for each follows.
 > **Microbiology.** OpenStax, Rice University, 2026.
 > <https://openstax.org/details/books/microbiology>
 
-**Licence for all of the above:**
+**License for all of the above:**
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) · © 2026 Rice University.
 
 **Changes made.** Textbook content was used as source material for writing original
@@ -86,11 +86,11 @@ definition is close to the source wording, it is attributed to the title above.
 ### On editions
 
 The editions used here are the **2026 OpenStax releases, which carry the NonCommercial
-licence**. Earlier editions of several of these titles were published under **CC BY 4.0**
+license**. Earlier editions of several of these titles were published under **CC BY 4.0**
 (attribution only, no NonCommercial restriction), and a Creative Commons grant is
 irrevocable — so a project that harvested an *earlier* printing of the same title could
 lawfully treat that material differently. This project used the 2026 editions and is
-therefore bound by the NonCommercial term. **Do not assume a title's licence from its name:
+therefore bound by the NonCommercial term. **Do not assume a title's license from its name:
 re-read the copyright page of the exact edition in hand before reusing it.**
 
 ---
@@ -99,10 +99,10 @@ re-read the copyright page of the exact edition in hand before reusing it.**
 
 The app ships its own copies of the two type families it uses. Nothing is loaded from a
 third-party font service, so no visitor's IP address leaves this site to render a page.
-Both families are open-source fonts, redistributed here under the same licence they carry
+Both families are open-source fonts, redistributed here under the same license they carry
 upstream, unmodified except for subsetting to the Latin and Latin Extended ranges.
 
-| Family | Used for | Copyright | Licence | Upstream |
+| Family | Used for | Copyright | License | Upstream |
 |---|---|---|---|---|
 | **Libre Baskerville** | headings, display | © 2012 Pablo Impallari, Rodrigo Fuenzalida | SIL OFL 1.1 | <https://github.com/impallari/Libre-Baskerville> |
 | **Source Sans 3** | body text, UI | © Adobe | SIL OFL 1.1 | <https://github.com/adobe-fonts/source-sans> |
@@ -134,11 +134,11 @@ and misconception library are **written by Mu2 Solutions, LLC** and are licensed
 ## Everything else
 
 Fonts, icons, and any other third-party assets remain the property of their respective owners
-and are governed by their own licences.
+and are governed by their own licenses.
 
 ---
 
 ## Reporting a problem
 
-If you believe material here is misattributed or used outside its licence, please open an
+If you believe material here is misattributed or used outside its license, please open an
 issue and it will be corrected promptly.
