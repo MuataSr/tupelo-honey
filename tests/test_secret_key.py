@@ -15,6 +15,7 @@ time.
 """
 
 import os
+import shutil
 import subprocess
 import sys
 import unittest
@@ -24,12 +25,33 @@ ROOT = Path(__file__).resolve().parents[1]
 SECRET = "b" * 48
 
 
+def child_python():
+    """Interpreter to boot the app with.
+
+    sys.executable is empty under stripped environments (cron, systemd units, some
+    sandboxes). Passing that empty string to subprocess fails with a bare
+    "PermissionError: [Errno 13] Permission denied: ''", which names nothing and
+    reads like a permissions bug in the app. Resolve a real interpreter so the
+    suite reports on the session-key decision rather than on how it was started.
+    """
+    candidates = [
+        sys.executable,
+        shutil.which("python3"),
+        os.path.join(sys.exec_prefix, "bin", "python3"),
+        "/usr/bin/python3",
+    ]
+    for candidate in candidates:
+        if candidate and os.path.exists(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    return "python3"
+
+
 def boot(env_overrides):
     """Import app in a clean child process and return the CompletedProcess."""
     env = {k: v for k, v in os.environ.items() if k not in ("FLASK_SECRET", "FLASK_ENV")}
     env.update(env_overrides)
     return subprocess.run(
-        [sys.executable, "-c", "import app; print(app.app.secret_key)"],
+        [child_python(), "-c", "import app; print(app.app.secret_key)"],
         cwd=str(ROOT),
         env=env,
         capture_output=True,
