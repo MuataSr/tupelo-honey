@@ -828,20 +828,20 @@
   --a-gold-300: #FCD34D;
   --a-gold-400: #FBBF24;
   --a-gold-500: #D97706;
-  --a-gold-600: #B45309;
+  --a-gold-600: #A34A08;    /* a11y floor: 5.31:1 on #EEF3F8 */
   --a-gray-50:  #F9FAFB;
   --a-gray-100: #F3F4F6;
   --a-gray-200: #E5E7EB;
   --a-gray-300: #D1D5DB;
-  --a-gray-400: #9CA3AF;
-  --a-gray-500: #6B7280;
+  --a-gray-400: #696969;   /* a11y floor: 5.25:1 on cream, 4.99:1 on gray-100 */
+  --a-gray-500: #5F6469;   /* a11y floor: 5.4:1 on gray-100; #6B7280 measured 4.39:1 */
   --a-gray-600: #4B5563;
   --a-gray-700: #374151;
   --a-gray-800: #1F2937;
   --a-gray-900: #111827;
   --a-green-500: #10B981;
-  --a-green-600: #059669;
-  --a-red-500: #EF4444;
+  --a-green-600: #047857;   /* a11y floor: 5.48:1 white, 4.84:1 on #D1FAE5 */
+  --a-red-500: #DC2626;     /* a11y floor: white on it 4.83:1 */
   --a-amber-500: #F59E0B;
   --a-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --a-shadow-sm: 0 1px 2px rgba(16, 24, 40, .05);
@@ -1188,7 +1188,7 @@ body.standalone .auth-brand {
 .auth-logo-icon { height: 90px; width: auto; flex: none; }
 .auth-logo-word { display: flex; flex-direction: column; gap: 3px; }
 .auth-logo-name { font-weight: 800; font-size: 28px; letter-spacing: -0.01em; color: #1B3A5C; text-align: center; }
-.auth-logo-sub { font-weight: 600; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #f58220; text-align: center; }
+.auth-logo-sub { font-weight: 600; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #AD4F00; text-align: center;   /* brand orange #f58220 measured 2.59:1 */ }
 /* Standalone pages should not offer the sidebar toggle */
 body.standalone .menu-btn, body.standalone .sidebar-overlay { display: none !important; }
 
@@ -1448,10 +1448,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--a-navy-500); box
 .sc-att { color: #6B7280; font-size: 12.5px; }
 
 .sc-attrib {
-  font-size: 11.5px; color: #8A93A0; line-height: 1.6; margin: 6px 0 0;
+  font-size: 11.5px; color: #616A7D; line-height: 1.6; margin: 6px 0 0;   /* was #8A93A0 at 2.82:1 */
   border-top: 1px solid #EEF0F3; padding-top: 12px;
 }
-.sc-attrib a { color: #8A93A0; text-decoration: underline; }
+.sc-attrib a { color: #616A7D; text-decoration: underline; }
 
 /* ---------------------------------------------------------------------------
    Per-answer coach note  (.coach-note-*)

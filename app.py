@@ -218,7 +218,7 @@ _DOMAIN_GETTERS = {
         "quiz": kb.get_math_questions,
         "name": "Math",
         "icon": "🔢",
-        "color": "#C7862A",
+        "color": "#8F5810",   # a11y floor: 5.1:1 on its own 10% tint; #C7862A measured 2.77:1
     },
     "science": {
         "id": 3,
