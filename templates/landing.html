@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
 <style>
   :root{
-      --gold:#fcb004; --gold-deep:#f58220; --gold-soft:#ffd54f;
+      --gold:#fcb004; --gold-deep:#AD4F00; --gold-soft:#ffd54f;   /* gold-deep is text: #f58220 measured 2.59:1 -> 5.39 */
       --navy:#1B3A5C; --navy-deep:#142C47; --navy-ink:#0F2136;
       --blue:#008080; --blue-soft:#e0f2f1;
       --cream:#fbf9ec; --white:#fff; --ink:#1F2937; --muted:#5B6572;
@@ -24,8 +24,8 @@
 
   .btn{display:inline-block;font-weight:600;border-radius:12px;padding:14px 30px;font-size:16.5px;transition:transform .06s ease,box-shadow .15s ease}
   .btn:active{transform:translateY(1px)}
-  .btn-gold{background:var(--gold);color:#fff;box-shadow:0 3px 0 var(--gold-deep)}
-  .btn-gold:hover{background:var(--gold-deep)}
+  .btn-gold{background:var(--gold);color:#14213D;box-shadow:0 3px 0 var(--gold-deep)}   /* white on #fcb004 was 1.85:1 */
+  .btn-gold:hover{background:var(--gold-deep);color:#fff}
   .btn-navy{background:var(--navy);color:#fff}
 
   .hex{clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
