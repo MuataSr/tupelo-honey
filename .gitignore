@@ -50,3 +50,6 @@ data/content-77-presplit.json
 
 # db backups
 data/fcle.db.pre-*
+
+# a11y gate run output (baseline is committed; the run report is not)
+a11y_gate.json

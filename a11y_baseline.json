@@ -1,0 +1,19 @@
+{
+  "/": 23,
+  "/account": 9,
+  "/admin/waitlist": 0,
+  "/coach": 5,
+  "/diagnostic": 10,
+  "/login": 1,
+  "/onboarding": 0,
+  "/onboarding/skip": 0,
+  "/registered": 2,
+  "/settings": 6,
+  "/signup": 1,
+  "/stats": 22,
+  "/stimulus": 6,
+  "/stimulus/practice": 6,
+  "/tutor": 0,
+  "/tutor/history": 0,
+  "/tutor/status": 0
+}
