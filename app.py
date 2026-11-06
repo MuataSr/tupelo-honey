@@ -6,6 +6,7 @@ Four domains: Reading, Math, Science, English & Language Usage.
 All data from kb.py (question bank) and db.py (user progress).
 """
 
+import json
 import os
 import uuid
 import random
@@ -20,6 +21,21 @@ import db
 import coach.copy as coach_copy
 import coach.engine as coach_engine        # Study Coach: deterministic, no model, no network
 import coach.repository as coach_repository
+
+
+def _parse_options(raw):
+    """Stored option list: JSON array when bracketed, else legacy pipe-delimited.
+
+    Replaces eval(), which executed whatever string the database held.
+    """
+    if not isinstance(raw, str):
+        return list(raw or [])
+    if raw.startswith("["):
+        try:
+            return json.loads(raw)
+        except ValueError:
+            pass
+    return raw.split("|")
 
 # ---------------------------------------------------------------------------
 
@@ -1569,9 +1585,7 @@ def stimulus_practice_question(quiz_id, q_index):
     q = questions[q_index]
 
     # Parse options
-    wrong_answers = q.get("wrong_answers", "[]")
-    if isinstance(wrong_answers, str):
-        wrong_answers = eval(wrong_answers) if wrong_answers.startswith("[") else wrong_answers.split("|")
+    wrong_answers = _parse_options(q.get("wrong_answers", "[]"))
     correct = q.get("correct_answer", "")
     all_options = wrong_answers + [correct]
     random.shuffle(all_options)
